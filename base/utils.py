@@ -15,17 +15,14 @@ def find_points_in_which_polygon(df:pd.DataFrame, shp_path):
     """
     :param df: 一个dataframe，包含经纬度信息
     :param shp_path: 田块shp文件路径
-    :return: result_dict：一个字典，key是田块id，value是一个list，list中的元素是一个list，包含经纬度和损失率
+    :return: result_dict：一个字典，key是田块id，value是一个pandas dataframe
     fieldid_hash_dict：一个字典，key是田块id，value是一个字典，包含田块的geom和properties
 
     """
     df_columns = df.columns.tolist()
     # Create an R-tree index and store the polygons in it
-    idx = rtree.index.Index()
-
-    
+    idx = rtree.index.Index()    
     fieldid_hash_dict = {} # 这个是用于把field hash和field index匹配起来的一个字典
-
     with fiona.open(shp_path) as shp: # 建立起田块index与地理信息的关系，放进rtree里
         print(type(shp)) # fiona.collection.Collection'
         field_index = -1
@@ -50,29 +47,19 @@ def find_points_in_which_polygon(df:pd.DataFrame, shp_path):
             else:
                 raise ValueError(f"geom type error: {geom.geom_type}")
 
-    # print(idx)
-
 
     result_dict = {} # 建立一个字典，存储每个田块的id与其对应的经纬度点 
     # 查询每个点是否在某个polygon中
     for i in range(len(df)):
         lon= df.iloc[i]["longitude"]
         lat= df.iloc[i]["latitude"]
-        # lossrate = df.iloc[i]["lossrate"]
-
         point = Point(lon, lat)        
-        # 使用索引进行查询
-        possible_ppints = list(idx.intersection(point.bounds))
-        # print(f"possible_ppints: {possible_ppints}")
-
-
+        # 使用索引进行查询o
+        possible_points = list(idx.intersection(point.bounds))
         intersected_polygons = []
-        for polygon_id in possible_ppints:
+        for polygon_id in possible_points:
             if point.within(fieldid_hash_dict[polygon_id]["geom"]):
                 intersected_polygons.append(polygon_id)
-
-        # print(f"intersected_polygons: {intersected_polygons}")
-        
         # 此时intersected_polygons里存储的是这个点在哪些shp里
         
         # 将点添加到对应的polygon中

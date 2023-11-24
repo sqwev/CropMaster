@@ -113,8 +113,6 @@ nodatavalue: {self.nodatavalue}")
         gdaltype = gdal_array_type(nptype)
         
         print(f"WIDTH:{self.WIDTH}, HEIGHT:{self.HEIGHT}, array_dim:{self.dim},filled_array.shape:{self.array.shape}")
-        print(f"nptype:{nptype}, gdaltype:")
-
         
         if self.dim == 2:
             bands_num = 1         
