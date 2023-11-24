@@ -1,0 +1,8 @@
+
+numpy
+pandas
+tqdm
+rasterio
+rtree==1.0.1
+shapely ==1.8.5
+fiona==1.9.4
