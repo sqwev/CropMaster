@@ -28,7 +28,7 @@ class FarmWithOneImg:
         self.tif_path = tif_path
         self.farm_shp_path = farm_shp_path
 
-        self.img = Sentinel2Tif(path=self.tif_path, level="L2A")
+        self.img = RSImg(tif_path = self.tif_path)
         self.shp = Farmshp(farm_shp_path=self.farm_shp_path)
         self.year = year
 
@@ -126,7 +126,8 @@ class FarmWithOneImg:
                     field_bands, field_height, field_width = field_image.shape
                     # print(f"field_bands:{field_bands},field_width:{field_width},field_height:{field_height}")
                 # field_image中的nodatavalue替换为nan
-                field_image = np.where(field_image == 0, np.nan, field_image)
+                nodatavalue = self.img.nodatavalue
+                field_image = np.where(field_image == nodatavalue, np.nan, field_image)
 
                 output = process_fun(field_image=field_image, properties=properties)
                 # print(f"output shape:{output.shape}")
@@ -141,13 +142,24 @@ class FarmWithOneImg:
                 # print(f"x_res:{x_res},y_res:{y_res}, x_min:{x_min}, y_min:{y_min}, x_max:{x_max}, y_max:{y_max}")
                 
                 # 计算在田块中的位置
-                def calculate_index(value, transform, index):
-                    return int(round((value - transform[index]) / transform[index+1]))
-                # 计算 col_min 等值，并四舍五入到整数
-                col_min = calculate_index(x_min, self.geoTransform, 0)
-                row_max = calculate_index(y_max, self.geoTransform, 3)
-                col_max = calculate_index(x_max, self.geoTransform, 0)
-                row_min = calculate_index(y_min, self.geoTransform, 3)
+                geoTransform = self.geoTransform
+                col_min = ((x_min - geoTransform[0]) / geoTransform[1])
+                row_max = ((y_max - geoTransform[3]) / geoTransform[5])
+                col_max = ((x_max - geoTransform[0]) / geoTransform[1])
+                row_min = ((y_min - geoTransform[3]) / geoTransform[5])
+                
+                # 四舍五入到int
+                col_min = int(round(col_min,0))
+                row_max = int(round(row_max,0))
+                col_max = int(round(col_max,0))
+                row_min = int(round(row_min,0))
+                # def calculate_index(value, transform, index):
+                #     return int(round((value - transform[index]) / transform[index+1]))
+                # # 计算 col_min 等值，并四舍五入到整数
+                # col_min = calculate_index(x_min, self.geoTransform, 0)
+                # row_max = calculate_index(y_max, self.geoTransform, 3)
+                # col_max = calculate_index(x_max, self.geoTransform, 0)
+                # row_min = calculate_index(y_min, self.geoTransform, 3)
                 # print(f"col_min:{col_min},col_max:{col_max},row_min:{row_min},row_max:{row_max}")
 
                 # 将田块内的值填充到filled_array中

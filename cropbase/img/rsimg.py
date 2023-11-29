@@ -26,18 +26,18 @@ class RSImg:
             self.projection = projection
             self.geoTransform = geoTransform
 
-        self.dim = len(array.shape)
+        self.dim = len(self.array.shape)
         if self.dim != 2 and self.dim != 3:
             raise Exception(f"Field array dimemsion: {self.dim} not supported")
 
         if self.dim == 2:
             self.BANDS = 1
-            self.HEIGHT = array.shape[0]
-            self.WIDTH = array.shape[1]
+            self.HEIGHT = self.array.shape[0]
+            self.WIDTH = self.array.shape[1]
         else:
-            self.BANDS = array.shape[0]
-            self.HEIGHT = array.shape[1]
-            self.WIDTH = array.shape[2]
+            self.BANDS = self.array.shape[0]
+            self.HEIGHT = self.array.shape[1]
+            self.WIDTH = self.array.shape[2]
 
         self.valid_mask = self.get_valid_mask()   
 
