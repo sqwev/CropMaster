@@ -4,7 +4,15 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../..'))
+
+# make work on windows and linux
+abspath = os.path.abspath(__file__)
+source_path = os.path.dirname(abspath)
+docs_path = os.path.dirname(source_path)
+root_path = os.path.dirname(docs_path)
+sys.path.insert(0, root_path)
+
+
 # print(os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
