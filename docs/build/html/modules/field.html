@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>cropbase.field &mdash; Crop Master 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=8c72a3ca" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="cropbase.farm" href="farm.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Crop Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="rsimg.html">cropbase.img</a></li>
+<li class="toctree-l2"><a class="reference internal" href="farm.html">cropbase.farm</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">cropbase.field</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cropbase.field.field.Field"><code class="docutils literal notranslate"><span class="pre">Field</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.field.field.Field.aug_mask"><code class="docutils literal notranslate"><span class="pre">Field.aug_mask()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.field.field.Field.crs"><code class="docutils literal notranslate"><span class="pre">Field.crs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.field.field.Field.deregister_img"><code class="docutils literal notranslate"><span class="pre">Field.deregister_img()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.field.field.Field.filter_point_value_df"><code class="docutils literal notranslate"><span class="pre">Field.filter_point_value_df()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.field.field.Field.gen_aug_mask"><code class="docutils literal notranslate"><span class="pre">Field.gen_aug_mask()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.field.field.Field.geometry"><code class="docutils literal notranslate"><span class="pre">Field.geometry</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.field.field.Field.get_img"><code class="docutils literal notranslate"><span class="pre">Field.get_img()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.field.field.Field.index"><code class="docutils literal notranslate"><span class="pre">Field.index</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.field.field.Field.name"><code class="docutils literal notranslate"><span class="pre">Field.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.field.field.Field.public_properties"><code class="docutils literal notranslate"><span class="pre">Field.public_properties</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.field.field.Field.register_img"><code class="docutils literal notranslate"><span class="pre">Field.register_img()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.field.field.Field.set_properties"><code class="docutils literal notranslate"><span class="pre">Field.set_properties()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.field.field.Field.to_geodataframe"><code class="docutils literal notranslate"><span class="pre">Field.to_geodataframe()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#cropbase.field.field.FieldImg"><code class="docutils literal notranslate"><span class="pre">FieldImg</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cropbase.field.field.Fields"><code class="docutils literal notranslate"><span class="pre">Fields</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Crop Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Documentation</a></li>
+      <li class="breadcrumb-item active">cropbase.field</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/field.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-cropbase.field.field">
+<span id="cropbase-field"></span><h1>cropbase.field<a class="headerlink" href="#module-cropbase.field.field" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="cropbase.field.field.Field">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cropbase.field.field.</span></span><span class="sig-name descname"><span class="pre">Field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.field.field.Field" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>My design of Field class:
+The Field class is a field, which can be defined by polygon/multipolygon or raster image, or only by an index.</p>
+<p>The public properties of a field is a pandas series, which only contains scalar values.(Now I think)</p>
+<p>In the future: Following the writing style of PCSE, soil, crops, site, agricultural management, weather,
+Status variables, Speed variables</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> – int, the index of the field</p></li>
+<li><p><strong>img_dict</strong> – dict, the dict of RSImg</p></li>
+<li><p><strong>crs</strong> – str, the projection of the field</p></li>
+<li><p><strong>geometry</strong> – shapely.geometry.Polygon or shapely.geometry.MultiPolygon, the geometry of the field</p></li>
+<li><p><strong>pdseries</strong> – pd.Series, the public properties of the field</p></li>
+</ul>
+</dd>
+</dl>
+<p>:name str, the name of the field</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.field.field.Field.aug_mask">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">aug_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cluster_mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_col_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.field.field.Field.aug_mask" title="Link to this definition"></a></dt>
+<dd><p>Input a cluster_mask and a location_df, then generate a new mask, mapper the location_df to the cluster_mask.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_mask</strong> – np.ndarray The cluster mask</p></li>
+<li><p><strong>location_df</strong> – pd.DataFrame or gpd.GeoDataFrame must contain col_idx, row_idx, value fields</p></li>
+<li><p><strong>type</strong> – str, mean or max_point_number</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray The augmented mask, nodata is nan</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cropbase.field.field.Field.crs">
+<span class="sig-name descname"><span class="pre">crs</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#cropbase.field.field.Field.crs" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.field.field.Field.deregister_img">
+<span class="sig-name descname"><span class="pre">deregister_img</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.field.field.Field.deregister_img" title="Link to this definition"></a></dt>
+<dd><p>deregister a RSImg with name to the field. The RSImg will be removed from the img_dict of the private</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> – str The name of the RSImg</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.field.field.Field.filter_point_value_df">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">filter_point_value_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.field.field.Field.filter_point_value_df" title="Link to this definition"></a></dt>
+<dd><p>add col_idx, row_idx to point_df and del point not in field</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>point_df</strong> – gpd.GeoDataFrame It must be only contain point geometry</p></li>
+<li><p><strong>img</strong> – RSImg</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.field.field.Field.gen_aug_mask">
+<span class="sig-name descname"><span class="pre">gen_aug_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cluster_mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.field.field.Field.gen_aug_mask" title="Link to this definition"></a></dt>
+<dd><p>Input a cluster_mask and a location_df, then generate a new mask, mapper the location_df to the cluster_mask.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_mask</strong> – np.ndarray The cluster mask</p></li>
+<li><p><strong>location_df</strong> – pd.DataFrame or gpd.GeoDataFrame must contain col_idx, row_idx, value fields</p></li>
+<li><p><strong>type</strong> – str, mean or max_point_number</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cropbase.field.field.Field.geometry">
+<span class="sig-name descname"><span class="pre">geometry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#cropbase.field.field.Field.geometry" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.field.field.Field.get_img">
+<span class="sig-name descname"><span class="pre">get_img</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.field.field.Field.get_img" title="Link to this definition"></a></dt>
+<dd><p>get a RSImg with name to the field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> – str The name of the RSImg</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cropbase.field.field.Field.index">
+<span class="sig-name descname"><span class="pre">index</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#cropbase.field.field.Field.index" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cropbase.field.field.Field.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#cropbase.field.field.Field.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cropbase.field.field.Field.public_properties">
+<span class="sig-name descname"><span class="pre">public_properties</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Series([],</span> <span class="pre">dtype:</span> <span class="pre">float64)</span></em><a class="headerlink" href="#cropbase.field.field.Field.public_properties" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.field.field.Field.register_img">
+<span class="sig-name descname"><span class="pre">register_img</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="rsimg.html#cropbase.img.rsimg.RSImg" title="cropbase.img.rsimg.RSImg"><span class="pre">RSImg</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.field.field.Field.register_img" title="Link to this definition"></a></dt>
+<dd><p>register a RSImg with name to the field. The RSImg will be stored in the img_dict of the private
+property of the field object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>img</strong> – RSImg</p></li>
+<li><p><strong>name</strong> – str The name of the RSImg</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.field.field.Field.set_properties">
+<span class="sig-name descname"><span class="pre">set_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">properties</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.field.field.Field.set_properties" title="Link to this definition"></a></dt>
+<dd><p>set public properties of the field</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>properties</strong> – dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.field.field.Field.to_geodataframe">
+<span class="sig-name descname"><span class="pre">to_geodataframe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.field.field.Field.to_geodataframe" title="Link to this definition"></a></dt>
+<dd><p>Create a GeoDataFrame from the public properties and geometry of the field</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cropbase.field.field.FieldImg">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cropbase.field.field.</span></span><span class="sig-name descname"><span class="pre">FieldImg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodatavalue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geoTransform</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.field.field.FieldImg" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="rsimg.html#cropbase.img.rsimg.RSImg" title="cropbase.img.rsimg.RSImg"><code class="xref py py-class docutils literal notranslate"><span class="pre">RSImg</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cropbase.field.field.Fields">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cropbase.field.field.</span></span><span class="sig-name descname"><span class="pre">Fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.field.field.Fields" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="farm.html" class="btn btn-neutral float-left" title="cropbase.farm" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Shenzhou Liu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

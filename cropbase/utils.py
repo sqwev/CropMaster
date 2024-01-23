@@ -2,6 +2,7 @@
 import fiona
 import rtree
 import json
+import os
 import rasterio
 import pandas as pd
 import numpy as np
@@ -77,7 +78,42 @@ def find_points_in_which_polygon(df:pd.DataFrame, shp_path):
 
 
 
+def find_points_in_which_polygon_v2(df:pd.DataFrame, shp_path):
 
+    # check input
+    # should have longitude, latitude, lossrate
+    essential_columns = ["longitude", "latitude"]
+    for column in essential_columns:
+        if column not in df.columns:
+            raise Exception(f"column: {column} not in df.columns: {df.columns}")
+    # do not have nan
+    if df.isnull().values.any():
+        raise Exception(f"inputdf contains nan")
+    # only select the essential columns
+    # df = df[essential_columns]
+    # -----------------------------------------------
+    # 这里只需要df含有longitude, latitude，返回的时候还是返回df中的所有元素
+    result_dict, fieldid_hash_dict = find_points_in_which_polygon(df=df, 
+                                                                    shp_path=shp_path)
+    # 返回田块的id，以及田块的geometry，properties
+    # print(f"The following field has loss points:")
+    field_res = {}
+    for fieldid, info in result_dict.items():
+        # print(f"fieldid: {fieldid}")
+        # print(f"info: {info}")
+        field_properties = fieldid_hash_dict[fieldid]["properties"]
+        field_geom = fieldid_hash_dict[fieldid]["geom"]
+        field_points = info
+        field_res[fieldid] = {
+            "properties": field_properties,
+            "geom": field_geom,
+            "points": field_points
+        }
+
+    # format_print_dict(field_res)
+
+    
+    return field_res
 
 
 def gdal_array_type(np_datatype):
@@ -101,7 +137,30 @@ def gdal_array_type(np_datatype):
 
 
 
+# 读取自己打的取样点
 
+def read_yield_from_shp(shp_path):
+    """
+    Read yield from shapefile
+    :param shp_path: path of shapefile
+    :return: yield
+    """
+    shp_name = os.path.basename(shp_path)
+    farm, date, _, lossrate = shp_name.split('.')[0].split('_')
+    lossrate = int(lossrate)/100
+    with fiona.open(shp_path, 'r') as shp:
+        # assert if it is point shapefile
+        assert shp.schema['geometry'] == 'Point', 'Shapefile is not point shapefile'
+
+        # read longitude and latitude
+        loc_list = []
+        # print(f"the length of shp is {len(shp)}")
+        for feature in shp:
+            longitude, latitude = feature['geometry']['coordinates']
+            loc_list.append([longitude, latitude, farm, date, lossrate])
+
+    loc_df = pd.DataFrame(loc_list, columns=['longitude', 'latitude', 'farm', 'date', 'lossrate'])
+    return loc_df
 
 
 

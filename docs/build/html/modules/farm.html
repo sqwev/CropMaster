@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>cropbase.farm &mdash; Crop Master 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=8c72a3ca" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="cropbase.field" href="field.html" />
+    <link rel="prev" title="cropbase.img" href="rsimg.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Crop Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="rsimg.html">cropbase.img</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">cropbase.farm</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cropbase.farm.farm.Farm"><code class="docutils literal notranslate"><span class="pre">Farm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.Farm.find_points_in_which_field"><code class="docutils literal notranslate"><span class="pre">Farm.find_points_in_which_field()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.Farm.get_fields"><code class="docutils literal notranslate"><span class="pre">Farm.get_fields()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.Farm.get_geoDataFrame"><code class="docutils literal notranslate"><span class="pre">Farm.get_geoDataFrame()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.Farm.is_point_gdf"><code class="docutils literal notranslate"><span class="pre">Farm.is_point_gdf()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.Farm.plot"><code class="docutils literal notranslate"><span class="pre">Farm.plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.Farm.set_name"><code class="docutils literal notranslate"><span class="pre">Farm.set_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.Farm.split_multipolygon"><code class="docutils literal notranslate"><span class="pre">Farm.split_multipolygon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.Farm.split_multipolygon_fields"><code class="docutils literal notranslate"><span class="pre">Farm.split_multipolygon_fields()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.Farm.split_multipolygon_in_fiona_features"><code class="docutils literal notranslate"><span class="pre">Farm.split_multipolygon_in_fiona_features()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.Farm.split_multipolygon_in_geoDataFrame"><code class="docutils literal notranslate"><span class="pre">Farm.split_multipolygon_in_geoDataFrame()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.Farm.to_file"><code class="docutils literal notranslate"><span class="pre">Farm.to_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.Farm.update_fields"><code class="docutils literal notranslate"><span class="pre">Farm.update_fields()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#cropbase.farm.farm.FarmWithOneImg"><code class="docutils literal notranslate"><span class="pre">FarmWithOneImg</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.FarmWithOneImg.features"><code class="docutils literal notranslate"><span class="pre">FarmWithOneImg.features</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.FarmWithOneImg.gen_croptype_mask"><code class="docutils literal notranslate"><span class="pre">FarmWithOneImg.gen_croptype_mask()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.FarmWithOneImg.gen_disaster"><code class="docutils literal notranslate"><span class="pre">FarmWithOneImg.gen_disaster()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.FarmWithOneImg.gen_yield"><code class="docutils literal notranslate"><span class="pre">FarmWithOneImg.gen_yield()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.FarmWithOneImg.img"><code class="docutils literal notranslate"><span class="pre">FarmWithOneImg.img</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.FarmWithOneImg.process_by_field"><code class="docutils literal notranslate"><span class="pre">FarmWithOneImg.process_by_field()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.FarmWithOneImg.select_field"><code class="docutils literal notranslate"><span class="pre">FarmWithOneImg.select_field()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#cropbase.farm.farm.NewFarmWithOneImg"><code class="docutils literal notranslate"><span class="pre">NewFarmWithOneImg</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.NewFarmWithOneImg.croptype_mask"><code class="docutils literal notranslate"><span class="pre">NewFarmWithOneImg.croptype_mask()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.NewFarmWithOneImg.disaster_mask"><code class="docutils literal notranslate"><span class="pre">NewFarmWithOneImg.disaster_mask()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.NewFarmWithOneImg.field_meta2geoTransform"><code class="docutils literal notranslate"><span class="pre">NewFarmWithOneImg.field_meta2geoTransform()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.NewFarmWithOneImg.find_field_pos_in_farm"><code class="docutils literal notranslate"><span class="pre">NewFarmWithOneImg.find_field_pos_in_farm()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.NewFarmWithOneImg.process_by_field_img"><code class="docutils literal notranslate"><span class="pre">NewFarmWithOneImg.process_by_field_img()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.NewFarmWithOneImg.process_one_field_img"><code class="docutils literal notranslate"><span class="pre">NewFarmWithOneImg.process_one_field_img()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.farm.farm.NewFarmWithOneImg.yield_mask"><code class="docutils literal notranslate"><span class="pre">NewFarmWithOneImg.yield_mask()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="field.html">cropbase.field</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Crop Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Documentation</a></li>
+      <li class="breadcrumb-item active">cropbase.farm</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/farm.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-cropbase.farm.farm">
+<span id="cropbase-farm"></span><h1>cropbase.farm<a class="headerlink" href="#module-cropbase.farm.farm" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="cropbase.farm.farm.Farm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cropbase.farm.farm.</span></span><span class="sig-name descname"><span class="pre">Farm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.Farm" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Farm is a class to store a farm’s information, including fields, farm name, farm shp path, farm tif path, etc.</p>
+<ul class="simple">
+<li><p>fields_df: gpd.GeoDataFrame, fields_df is a GeoDataFrame, each row is a field, and each field has a geometry.</p></li>
+<li><p>fields: list, each element is a Field object</p></li>
+<li><p>name: str, farm name</p></li>
+<li><p>crs: crs, coordinate reference system</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file</strong> – shp or geojson</p></li>
+<li><p><strong>convert_dict</strong> – convert cols name in shp to standard cols name</p></li>
+<li><p><strong>name</strong> – str Farm name</p></li>
+<li><p><strong>gis_index_type</strong> – arcgis or qgis  This is used for init the index of field index,</p></li>
+</ul>
+</dd>
+</dl>
+<p>for Arcgis start from 0, and Qgis start from 1.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.farm.farm.Farm.find_points_in_which_field">
+<span class="sig-name descname"><span class="pre">find_points_in_which_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_multipolygon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.Farm.find_points_in_which_field" title="Link to this definition"></a></dt>
+<dd><p>input a point GeoDataFrame, find which field each point in.
+Warning: This method only use polygon to find which field each point in,</p>
+<p>:param points_df : GeoDataFrame, points GeoDataFrame
+:return: GeoDataFrame add field_id column in input GeoDataFrame, if the point not in any polygon,
+field_id is nan.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.farm.farm.Farm.get_fields">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#cropbase.farm.farm.Farm.get_fields" title="Link to this definition"></a></dt>
+<dd><p>convert GeoDataFrame to list of Field object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>df</strong> – gpd.GeoDataFrame</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list, Field</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.farm.farm.Farm.get_geoDataFrame">
+<span class="sig-name descname"><span class="pre">get_geoDataFrame</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.Farm.get_geoDataFrame" title="Link to this definition"></a></dt>
+<dd><p>Collect all fields’ public properties to a GeoDataFrame</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpd.GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.farm.farm.Farm.is_point_gdf">
+<span class="sig-name descname"><span class="pre">is_point_gdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.Farm.is_point_gdf" title="Link to this definition"></a></dt>
+<dd><p>check GeoDataFrame is point or not</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>gdf</strong> – GeoDataFrame</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.farm.farm.Farm.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.Farm.plot" title="Link to this definition"></a></dt>
+<dd><p>plot farm use matplotlib</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.farm.farm.Farm.set_name">
+<span class="sig-name descname"><span class="pre">set_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.Farm.set_name" title="Link to this definition"></a></dt>
+<dd><p>Set farm name
+:param name: str Farm name</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.farm.farm.Farm.split_multipolygon">
+<span class="sig-name descname"><span class="pre">split_multipolygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.Farm.split_multipolygon" title="Link to this definition"></a></dt>
+<dd><p>split multipolygon object, support GeoDataFrame and fiona.Collection</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> – GeoDataFrame or fiona.Collection</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.farm.farm.Farm.split_multipolygon_fields">
+<span class="sig-name descname"><span class="pre">split_multipolygon_fields</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.Farm.split_multipolygon_fields" title="Link to this definition"></a></dt>
+<dd><p>if there are multipolygon in fields_df, split it to single polygon</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.farm.farm.Farm.split_multipolygon_in_fiona_features">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">split_multipolygon_in_fiona_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Collection</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.Farm.split_multipolygon_in_fiona_features" title="Link to this definition"></a></dt>
+<dd><p>split multipolygon object in fiona.Collection</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>features</strong> – fiona.Collection</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.farm.farm.Farm.split_multipolygon_in_geoDataFrame">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">split_multipolygon_in_geoDataFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geo_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GeoDataFrame</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.Farm.split_multipolygon_in_geoDataFrame" title="Link to this definition"></a></dt>
+<dd><p>split multipolygon object in GeoDataFrame</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>geo_df</strong> – GeoDataFrame</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.farm.farm.Farm.to_file">
+<span class="sig-name descname"><span class="pre">to_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.Farm.to_file" title="Link to this definition"></a></dt>
+<dd><p>Save farm to file, support shp and geojson</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.farm.farm.Farm.update_fields">
+<span class="sig-name descname"><span class="pre">update_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fields_df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.Farm.update_fields" title="Link to this definition"></a></dt>
+<dd><p>Update fields from fields_df</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cropbase.farm.farm.FarmWithOneImg">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cropbase.farm.farm.</span></span><span class="sig-name descname"><span class="pre">FarmWithOneImg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tif_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">farm_shp_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.FarmWithOneImg" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class is deprecated</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cropbase.farm.farm.FarmWithOneImg.features">
+<span class="sig-name descname"><span class="pre">features</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#cropbase.farm.farm.FarmWithOneImg.features" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.farm.farm.FarmWithOneImg.gen_croptype_mask">
+<span class="sig-name descname"><span class="pre">gen_croptype_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">savepath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.FarmWithOneImg.gen_croptype_mask" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.farm.farm.FarmWithOneImg.gen_disaster">
+<span class="sig-name descname"><span class="pre">gen_disaster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">savepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disaster_type_df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.FarmWithOneImg.gen_disaster" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.farm.farm.FarmWithOneImg.gen_yield">
+<span class="sig-name descname"><span class="pre">gen_yield</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">savepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yielddf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">if_aug</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gentif</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.FarmWithOneImg.gen_yield" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cropbase.farm.farm.FarmWithOneImg.img">
+<span class="sig-name descname"><span class="pre">img</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#cropbase.farm.farm.FarmWithOneImg.img" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.farm.farm.FarmWithOneImg.process_by_field">
+<span class="sig-name descname"><span class="pre">process_by_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_fun</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_nodatavalue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_nodatavalue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_data_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_id_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.FarmWithOneImg.process_by_field" title="Link to this definition"></a></dt>
+<dd><p>features是fiona.open读取的shp文件，是一个可迭代对象
+process_fun是一个函数，输入的是array和properties，输出是array,输入和输出的array中的nodatavalue都是np.nan
+nodatavalue是输出的tif中的nodatavalue;关键字传参，传递field对象
+force_data_type是输出的tif中的数据类型，如果为None，则输出的tif中的数据类型一般为float32</p>
+<p>这个程序用于处理一个tif中的所有田块，每个田块的处理结果是一个array，对每个田块的array进行处理，
+返回一个与田块大小相同的array，将所有田块的array填充到这个array中，最后返回一个RSImg对象</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.farm.farm.FarmWithOneImg.select_field">
+<span class="sig-name descname"><span class="pre">select_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fieldid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.FarmWithOneImg.select_field" title="Link to this definition"></a></dt>
+<dd><p>fieldid: 田块的id
+return: FieldImg对象</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cropbase.farm.farm.NewFarmWithOneImg">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cropbase.farm.farm.</span></span><span class="sig-name descname"><span class="pre">NewFarmWithOneImg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">farm</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.NewFarmWithOneImg" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.farm.farm.NewFarmWithOneImg.croptype_mask">
+<span class="sig-name descname"><span class="pre">croptype_mask</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.NewFarmWithOneImg.croptype_mask" title="Link to this definition"></a></dt>
+<dd><p>my personal function</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.farm.farm.NewFarmWithOneImg.disaster_mask">
+<span class="sig-name descname"><span class="pre">disaster_mask</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.NewFarmWithOneImg.disaster_mask" title="Link to this definition"></a></dt>
+<dd><p>my personal function</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.farm.farm.NewFarmWithOneImg.field_meta2geoTransform">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">field_meta2geoTransform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.NewFarmWithOneImg.field_meta2geoTransform" title="Link to this definition"></a></dt>
+<dd><p>Use rasterio.open(tif_path).meta to get the geoTransform information of the field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>meta</strong> – rasterio.open(tif_path).meta</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>geoTransform</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.farm.farm.NewFarmWithOneImg.find_field_pos_in_farm">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">find_field_pos_in_farm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_geoTransform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">farm_geoTransform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_width_pixel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_height_pixel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.NewFarmWithOneImg.find_field_pos_in_farm" title="Link to this definition"></a></dt>
+<dd><p>Find the position of a field in a farm given their geoTransform information and pixel dimensions.</p>
+<p>Parameters:
+- field_geoTransform (tuple): GeoTransform information of the field (x_min, x_res, _, y_min, _, y_res).
+- farm_geoTransform (tuple): GeoTransform information of the farm.
+- field_width_pixel (int): Width of the field in pixels.
+- field_height_pixel (int): Height of the field in pixels.</p>
+<p>Returns:
+Tuple (col_min, row_max, col_max, row_min): The position of the field in the farm, expressed in pixel coordinates.
+- col_min (int): Minimum column index.
+- row_max (int): Maximum row index.
+- col_max (int): Maximum column index.
+- row_min (int): Minimum row index.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.farm.farm.NewFarmWithOneImg.process_by_field_img">
+<span class="sig-name descname"><span class="pre">process_by_field_img</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">process_fun</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_nodatavalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_data_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.NewFarmWithOneImg.process_by_field_img" title="Link to this definition"></a></dt>
+<dd><p>Mapper the process function to each field in the farm, and return the processed result as a RSImg object.
+It’s hard for me to compatiate gdal and rasterio.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>process_fun</strong> – The processing function applied to the field’s image data. The param into the function         is using keyword param, and the param name is field. (field = kwargs[“field”]).</p></li>
+<li><p><strong>output_nodatavalue</strong> – The nodata value used in the output.</p></li>
+<li><p><strong>force_data_type</strong> – Optional parameter to specify the desired data type for the processed output.</p></li>
+<li><p><strong>field_list</strong> – Optional parameter to specify the desired field list for the processed output. If None,</p></li>
+</ul>
+</dd>
+</dl>
+<p>the field list is the farm’s all field list.
+:return: RSImg object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.farm.farm.NewFarmWithOneImg.process_one_field_img">
+<span class="sig-name descname"><span class="pre">process_one_field_img</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">process_fun</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="field.html#cropbase.field.field.Field" title="cropbase.field.field.Field"><span class="pre">Field</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_nodatavalue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_data_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.NewFarmWithOneImg.process_one_field_img" title="Link to this definition"></a></dt>
+<dd><p>Process the image data of a single field using a specified processing function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Params process_fun (callable)<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The processing function applied to the field’s image data.</p>
+</dd>
+<dt class="field-even">Params field (Field)<span class="colon">:</span></dt>
+<dd class="field-even"><p>The field object containing geometry information.</p>
+</dd>
+<dt class="field-odd">Params ref_src<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The reference source (rasterio dataset) used for masking the field’s image.</p>
+</dd>
+<dt class="field-even">Params output_nodatavalue<span class="colon">:</span></dt>
+<dd class="field-even"><p>The nodata value used in the output.</p>
+</dd>
+<dt class="field-odd">Params img_name (str)<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The name associated with the field’s image.</p>
+</dd>
+<dt class="field-even">Params force_data_type (type)<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional parameter to specify the desired data type for the processed output.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple (output, field_transform, field_height, field_width):            - output: The processed output obtained from the specified processing function.            - field_transform: The transformation matrix for the field’s image data.            - field_height (int): The height (number of rows) of the field’s image data.            - field_width (int): The width (number of columns) of the field’s image data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.farm.farm.NewFarmWithOneImg.yield_mask">
+<span class="sig-name descname"><span class="pre">yield_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lossrate_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">if_aug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gentif</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'kmeans'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_bands</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.farm.farm.NewFarmWithOneImg.yield_mask" title="Link to this definition"></a></dt>
+<dd><p>my personal function</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="rsimg.html" class="btn btn-neutral float-left" title="cropbase.img" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="field.html" class="btn btn-neutral float-right" title="cropbase.field" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Shenzhou Liu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

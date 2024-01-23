@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>cropbase.img &mdash; Crop Master 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=8c72a3ca" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="cropbase.farm" href="farm.html" />
+    <link rel="prev" title="API Documentation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Crop Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">cropbase.img</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cropbase.img.rsimg.RSImg"><code class="docutils literal notranslate"><span class="pre">RSImg</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.img.rsimg.RSImg.border"><code class="docutils literal notranslate"><span class="pre">RSImg.border</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.img.rsimg.RSImg.cluster"><code class="docutils literal notranslate"><span class="pre">RSImg.cluster()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.img.rsimg.RSImg.crop"><code class="docutils literal notranslate"><span class="pre">RSImg.crop()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.img.rsimg.RSImg.espg"><code class="docutils literal notranslate"><span class="pre">RSImg.espg</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.img.rsimg.RSImg.from_array"><code class="docutils literal notranslate"><span class="pre">RSImg.from_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.img.rsimg.RSImg.from_tif"><code class="docutils literal notranslate"><span class="pre">RSImg.from_tif()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.img.rsimg.RSImg.register_band"><code class="docutils literal notranslate"><span class="pre">RSImg.register_band()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.img.rsimg.RSImg.select_bands"><code class="docutils literal notranslate"><span class="pre">RSImg.select_bands()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.img.rsimg.RSImg.set_name"><code class="docutils literal notranslate"><span class="pre">RSImg.set_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.img.rsimg.RSImg.sliding_window_crop"><code class="docutils literal notranslate"><span class="pre">RSImg.sliding_window_crop()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.img.rsimg.RSImg.to_tif"><code class="docutils literal notranslate"><span class="pre">RSImg.to_tif()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.img.rsimg.RSImg.valid_mask"><code class="docutils literal notranslate"><span class="pre">RSImg.valid_mask</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#cropbase.img.rsimg.RestrictedDict"><code class="docutils literal notranslate"><span class="pre">RestrictedDict</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cropbase.img.rsimg.Sentinel2RSImg"><code class="docutils literal notranslate"><span class="pre">Sentinel2RSImg</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.img.rsimg.Sentinel2RSImg.cluster"><code class="docutils literal notranslate"><span class="pre">Sentinel2RSImg.cluster()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.img.rsimg.Sentinel2RSImg.from_array"><code class="docutils literal notranslate"><span class="pre">Sentinel2RSImg.from_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.img.rsimg.Sentinel2RSImg.from_tif"><code class="docutils literal notranslate"><span class="pre">Sentinel2RSImg.from_tif()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.img.rsimg.Sentinel2RSImg.get_cloudage"><code class="docutils literal notranslate"><span class="pre">Sentinel2RSImg.get_cloudage()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.img.rsimg.Sentinel2RSImg.renderRGB"><code class="docutils literal notranslate"><span class="pre">Sentinel2RSImg.renderRGB()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#cropbase.img.annotation_tool.anno.FarmAnnotation"><code class="docutils literal notranslate"><span class="pre">FarmAnnotation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.img.annotation_tool.anno.FarmAnnotation.add_one_farm_annos"><code class="docutils literal notranslate"><span class="pre">FarmAnnotation.add_one_farm_annos()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.img.annotation_tool.anno.FarmAnnotation.export_label"><code class="docutils literal notranslate"><span class="pre">FarmAnnotation.export_label()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.img.annotation_tool.anno.FarmAnnotation.gen_anno_in_one_tif"><code class="docutils literal notranslate"><span class="pre">FarmAnnotation.gen_anno_in_one_tif()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.img.annotation_tool.anno.FarmAnnotation.json_to_array"><code class="docutils literal notranslate"><span class="pre">FarmAnnotation.json_to_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cropbase.img.annotation_tool.anno.FarmAnnotation.nan_array_to_json"><code class="docutils literal notranslate"><span class="pre">FarmAnnotation.nan_array_to_json()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#cropbase.img.annotation_tool.anno.test_anno"><code class="docutils literal notranslate"><span class="pre">test_anno()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="farm.html">cropbase.farm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="field.html">cropbase.field</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Crop Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Documentation</a></li>
+      <li class="breadcrumb-item active">cropbase.img</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/rsimg.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-cropbase.img.rsimg">
+<span id="cropbase-img"></span><h1>cropbase.img<a class="headerlink" href="#module-cropbase.img.rsimg" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="cropbase.img.rsimg.RSImg">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cropbase.img.rsimg.</span></span><span class="sig-name descname"><span class="pre">RSImg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dataset</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.img.rsimg.RSImg" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>provide 2 ways to create RSImg; 1. from_array; 2. from_tif
+We recommend to create RsImg object with property <cite>name</cite> and <cite>date</cite></p>
+<p>if <cite>RsImg</cite> object is created without <cite>name</cite> and <cite>date</cite>, the <cite>name</cite> will be set to <cite>uuid.uuid1()</cite>,
+the date will be set to <cite>datetime.datetime.now().strftime(“%Y-%m-%d_%H-%M-%S”)</cite>.</p>
+<p>the useful property of <cite>RsImg</cite> object is:</p>
+<ul class="simple">
+<li><p><cite>ds</cite>: gdal dataset, campatible with gdal API</p></li>
+<li><p><cite>name</cite>: the name of the image</p></li>
+<li><p><cite>date</cite>: the date of the image</p></li>
+<li><p><cite>nodatavalue</cite>: the nodatavalue of the image</p></li>
+<li><p><cite>geotransform</cite>: the geotransform of the image</p></li>
+<li><p><cite>projection</cite>: the projection of the image</p></li>
+<li><p><cite>WIDTH</cite>: the width of the image</p></li>
+<li><p><cite>HEIGHT</cite>: the height of the image</p></li>
+<li><p><cite>BANDS</cite>: the bands of the image</p></li>
+<li><p><cite>dim</cite>: the dimension of the image</p></li>
+<li><p><cite>x_min, x_max, y_min, y_max</cite>: the boundary of the image</p></li>
+</ul>
+<p>suggest property init in __init__ function
+name: str
+date: str</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="cropbase.img.rsimg.RSImg.border">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">border</span></span><a class="headerlink" href="#cropbase.img.rsimg.RSImg.border" title="Link to this definition"></a></dt>
+<dd><p>Get the border of the image, but has not been Implemented</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.img.rsimg.RSImg.cluster">
+<span class="sig-name descname"><span class="pre">cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cluster_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">if_add_position_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'kmeans'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_bands</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.img.rsimg.RSImg.cluster" title="Link to this definition"></a></dt>
+<dd><p>Cluster the image by different method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_number</strong> – int   The number of cluster</p></li>
+<li><p><strong>if_add_position_encoding</strong> – bool   If add position encoding</p></li>
+<li><p><strong>method</strong> – str   The method of cluster</p></li>
+<li><p><strong>select_bands</strong> – list   The bands to select</p></li>
+<li><p><strong>filter_function</strong> – function   The function to filter the data</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.img.rsimg.RSImg.crop">
+<span class="sig-name descname"><span class="pre">crop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottom</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.img.rsimg.RSImg.crop" title="Link to this definition"></a></dt>
+<dd><p>Crop the image by pixel serial number</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> – int   The left pixel serial number</p></li>
+<li><p><strong>top</strong> – int   The top pixel serial number</p></li>
+<li><p><strong>right</strong> – int   The right pixel serial number</p></li>
+<li><p><strong>bottom</strong> – int   The bottom pixel serial number</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="cropbase.img.rsimg.RSImg.espg">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">espg</span></span><a class="headerlink" href="#cropbase.img.rsimg.RSImg.espg" title="Link to this definition"></a></dt>
+<dd><p>Get the epsg of the image</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.img.rsimg.RSImg.from_array">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodatavalue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geoTransform</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.img.rsimg.RSImg.from_array" title="Link to this definition"></a></dt>
+<dd><p>Create RsImg object from array</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> – np.array  The array of the image</p></li>
+<li><p><strong>nodatavalue</strong> – The nodatavalue of the image</p></li>
+<li><p><strong>projection</strong> – The projection of the image</p></li>
+<li><p><strong>geoTransform</strong> – The geoTransform of the image</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.img.rsimg.RSImg.from_tif">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_tif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tif_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.img.rsimg.RSImg.from_tif" title="Link to this definition"></a></dt>
+<dd><p>Create RsImg object from tif file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tif_path</strong> – str   The path of the tif file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.img.rsimg.RSImg.register_band">
+<span class="sig-name descname"><span class="pre">register_band</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">band</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.img.rsimg.RSImg.register_band" title="Link to this definition"></a></dt>
+<dd><p>register band, not supported now
+default_band = {</p>
+<blockquote>
+<div><p>“blue”: 0,
+“green”: 1,
+“red”: 2,
+“nir”: 3</p>
+</div></blockquote>
+<p>}</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.img.rsimg.RSImg.select_bands">
+<span class="sig-name descname"><span class="pre">select_bands</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">band_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.img.rsimg.RSImg.select_bands" title="Link to this definition"></a></dt>
+<dd><p>Select bands from RsImg object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>band_list</strong> – list or None   The band list to select</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.img.rsimg.RSImg.set_name">
+<span class="sig-name descname"><span class="pre">set_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.img.rsimg.RSImg.set_name" title="Link to this definition"></a></dt>
+<dd><p>Set the name of the image</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> – str   The name of the image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.img.rsimg.RSImg.sliding_window_crop">
+<span class="sig-name descname"><span class="pre">sliding_window_crop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repetition_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodatavalue</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.img.rsimg.RSImg.sliding_window_crop" title="Link to this definition"></a></dt>
+<dd><p>Sliding window crop the image</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>save_dir</strong> – str   The path to save the crop image</p></li>
+<li><p><strong>block_size</strong> – int   The size of the crop image</p></li>
+<li><p><strong>repetition_rate</strong> – float   The repetition rate of the crop image</p></li>
+<li><p><strong>nodatavalue</strong> – The nodatavalue of the image</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.img.rsimg.RSImg.to_tif">
+<span class="sig-name descname"><span class="pre">to_tif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.img.rsimg.RSImg.to_tif" title="Link to this definition"></a></dt>
+<dd><p>Save RsImg object to tif file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>save_path</strong> – str   The path of save tif file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="cropbase.img.rsimg.RSImg.valid_mask">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">valid_mask</span></span><a class="headerlink" href="#cropbase.img.rsimg.RSImg.valid_mask" title="Link to this definition"></a></dt>
+<dd><p>Generate a 2d array, 1 for valid, 0 for invalid</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cropbase.img.rsimg.RestrictedDict">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cropbase.img.rsimg.</span></span><span class="sig-name descname"><span class="pre">RestrictedDict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">allowed_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.img.rsimg.RestrictedDict" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cropbase.img.rsimg.Sentinel2RSImg">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cropbase.img.rsimg.</span></span><span class="sig-name descname"><span class="pre">Sentinel2RSImg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dataset</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.img.rsimg.Sentinel2RSImg" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#cropbase.img.rsimg.RSImg" title="cropbase.img.rsimg.RSImg"><code class="xref py py-class docutils literal notranslate"><span class="pre">RSImg</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.img.rsimg.Sentinel2RSImg.cluster">
+<span class="sig-name descname"><span class="pre">cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cluster_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">if_add_position_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'kmeans'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_bands</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1,</span> <span class="pre">2,</span> <span class="pre">3,</span> <span class="pre">7,</span> <span class="pre">-1]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.img.rsimg.Sentinel2RSImg.cluster" title="Link to this definition"></a></dt>
+<dd><p>Cluster the image by different method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cluster_number</strong> – int   The number of cluster</p></li>
+<li><p><strong>if_add_position_encoding</strong> – bool   If add position encoding</p></li>
+<li><p><strong>method</strong> – str   The method of cluster</p></li>
+<li><p><strong>select_bands</strong> – list   The bands to select</p></li>
+<li><p><strong>filter_function</strong> – function   The function to filter the data</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.img.rsimg.Sentinel2RSImg.from_array">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodatavalue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geoTransform</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.img.rsimg.Sentinel2RSImg.from_array" title="Link to this definition"></a></dt>
+<dd><p>Create RsImg object from array</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> – np.array  The array of the image</p></li>
+<li><p><strong>nodatavalue</strong> – The nodatavalue of the image</p></li>
+<li><p><strong>projection</strong> – The projection of the image</p></li>
+<li><p><strong>geoTransform</strong> – The geoTransform of the image</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.img.rsimg.Sentinel2RSImg.from_tif">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_tif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tif_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.img.rsimg.Sentinel2RSImg.from_tif" title="Link to this definition"></a></dt>
+<dd><p>Create RsImg object from tif file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tif_path</strong> – str   The path of the tif file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.img.rsimg.Sentinel2RSImg.get_cloudage">
+<span class="sig-name descname"><span class="pre">get_cloudage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.img.rsimg.Sentinel2RSImg.get_cloudage" title="Link to this definition"></a></dt>
+<dd><p>1为水体，2为云阴影，3为雪，4为云，5为土地，0为空值。</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.img.rsimg.Sentinel2RSImg.renderRGB">
+<span class="sig-name descname"><span class="pre">renderRGB</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.img.rsimg.Sentinel2RSImg.renderRGB" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class" id="module-cropbase.img.annotation_tool.anno">
+<dt class="sig sig-object py" id="cropbase.img.annotation_tool.anno.FarmAnnotation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cropbase.img.annotation_tool.anno.</span></span><span class="sig-name descname"><span class="pre">FarmAnnotation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block_size_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_size_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repetition_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.img.annotation_tool.anno.FarmAnnotation" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class is used for get annotations on a farm tif, and save these annotations as like-coco
+format json file.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.img.annotation_tool.anno.FarmAnnotation.add_one_farm_annos">
+<span class="sig-name descname"><span class="pre">add_one_farm_annos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tif_im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yield_im</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_yield_im</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disaster_im</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disaster_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crop_type_im</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crop_type_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_tif</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.img.annotation_tool.anno.FarmAnnotation.add_one_farm_annos" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.img.annotation_tool.anno.FarmAnnotation.export_label">
+<span class="sig-name descname"><span class="pre">export_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coco_fp</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.img.annotation_tool.anno.FarmAnnotation.export_label" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.img.annotation_tool.anno.FarmAnnotation.gen_anno_in_one_tif">
+<span class="sig-name descname"><span class="pre">gen_anno_in_one_tif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">anno_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_size_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_size_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repetition_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img_save_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_tif</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.img.annotation_tool.anno.FarmAnnotation.gen_anno_in_one_tif" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.img.annotation_tool.anno.FarmAnnotation.json_to_array">
+<span class="sig-name descname"><span class="pre">json_to_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodata_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">nan</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.img.annotation_tool.anno.FarmAnnotation.json_to_array" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cropbase.img.annotation_tool.anno.FarmAnnotation.nan_array_to_json">
+<span class="sig-name descname"><span class="pre">nan_array_to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">anno_array</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.img.annotation_tool.anno.FarmAnnotation.nan_array_to_json" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cropbase.img.annotation_tool.anno.test_anno">
+<span class="sig-prename descclassname"><span class="pre">cropbase.img.annotation_tool.anno.</span></span><span class="sig-name descname"><span class="pre">test_anno</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cropbase.img.annotation_tool.anno.test_anno" title="Link to this definition"></a></dt>
+<dd><p>staticmethod(function) -&gt; method</p>
+<p>Convert a function to be a static method.</p>
+<p>A static method does not receive an implicit first argument.
+To declare a static method, use this idiom:</p>
+<blockquote>
+<div><dl>
+<dt>class C:</dt><dd><p>&#64;staticmethod
+def f(arg1, arg2, …):</p>
+<blockquote>
+<div><p>…</p>
+</div></blockquote>
+</dd>
+</dl>
+</div></blockquote>
+<p>It can be called either on the class (e.g. C.f()) or on an instance
+(e.g. C().f()). Both the class and the instance are ignored, and
+neither is passed implicitly as the first argument to the method.</p>
+<p>Static methods in Python are similar to those found in Java or C++.
+For a more advanced concept, see the classmethod builtin.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="API Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="farm.html" class="btn btn-neutral float-right" title="cropbase.farm" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Shenzhou Liu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

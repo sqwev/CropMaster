@@ -1,1 +1,1 @@
-from .shp import Farmshp
+from .shp import Farmshp, CropDisasterSamplePoints

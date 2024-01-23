@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RsImg &mdash; Crop Master 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=8c72a3ca" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API Documentation" href="../modules/index.html" />
+    <link rel="prev" title="Tutorials" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Crop Master
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">RsImg</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#read-from-a-file">Read from a file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-valid-mask">Get valid mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#save-to-tif-file">Save to tif file</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/index.html">API Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Crop Master</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">RsImg</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorials/rsimg.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="rsimg">
+<h1>RsImg<a class="headerlink" href="#rsimg" title="Link to this heading"></a></h1>
+<p>We provide 2 ways to create RsImg object.
+One is to read from a file, the other is to create from a numpy array.</p>
+<section id="read-from-a-file">
+<h2>Read from a file<a class="headerlink" href="#read-from-a-file" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Read from a file</span>
+<span class="n">rsimg</span> <span class="o">=</span> <span class="n">RsImg</span><span class="o">.</span><span class="n">from_tif</span><span class="p">(</span><span class="s1">&#39;path/to/file.tif&#39;</span><span class="p">)</span>
+<span class="c1"># Read from a numpy array</span>
+<span class="n">rsimg</span> <span class="o">=</span> <span class="n">RsImg</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">nodatavalue</span><span class="p">,</span> <span class="n">geotransform</span><span class="p">,</span> <span class="n">projection</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We recommend to create RsImg object with property <code class="docutils literal notranslate"><span class="pre">name</span></code> and <code class="docutils literal notranslate"><span class="pre">date</span></code></p>
+<p>if <code class="docutils literal notranslate"><span class="pre">RsImg</span></code> object is created without <code class="docutils literal notranslate"><span class="pre">name</span></code> and <code class="docutils literal notranslate"><span class="pre">date</span></code>, the <code class="docutils literal notranslate"><span class="pre">name</span></code> will be set to <code class="docutils literal notranslate"><span class="pre">uuid.uuid1()</span></code>,
+the date will be set to <code class="docutils literal notranslate"><span class="pre">datetime.datetime.now().strftime(&quot;%Y-%m-%d_%H-%M-%S&quot;)</span></code>.</p>
+<p>the useful property of <code class="docutils literal notranslate"><span class="pre">RsImg</span></code> object is:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ds</span></code>: gdal dataset, campatible with gdal API</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: the name of the image</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">date</span></code>: the date of the image</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nodatavalue</span></code>: the nodatavalue of the image</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">geotransform</span></code>: the geotransform of the image</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">projection</span></code>: the projection of the image</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">WIDTH</span></code>: the width of the image</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">HEIGHT</span></code>: the height of the image</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BANDS</span></code>: the bands of the image</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dim</span></code>: the dimension of the image</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x_min,</span> <span class="pre">x_max,</span> <span class="pre">y_min,</span> <span class="pre">y_max</span></code>: the boundary of the image</p></li>
+</ul>
+</section>
+<section id="get-valid-mask">
+<h2>Get valid mask<a class="headerlink" href="#get-valid-mask" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mask</span> <span class="o">=</span> <span class="n">rsimg</span><span class="o">.</span><span class="n">valid_mask</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>the <code class="docutils literal notranslate"><span class="pre">mask</span></code> is a numpy array with shape (HEIGHT, WIDTH), the value is 0 or 1, 0 means no data, 1 means has valid data.</p>
+</section>
+<section id="save-to-tif-file">
+<h2>Save to tif file<a class="headerlink" href="#save-to-tif-file" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rsimg</span><span class="o">.</span><span class="n">to_tif</span><span class="p">(</span><span class="s1">&#39;path/to/file.tif&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../modules/index.html" class="btn btn-neutral float-right" title="API Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Shenzhou Liu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
