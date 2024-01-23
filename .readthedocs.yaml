@@ -9,7 +9,7 @@ version: 0.0.2
 build:
   os: Windows 11
   tools:
-    python: "3.9"
+    python: "3.9.16"
     # You can also specify other tool versions:
     # nodejs: "19"
     # rust: "1.64"
