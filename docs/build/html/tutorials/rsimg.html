@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RsImg &mdash; Crop Master 0.0.1 documentation</title>
+  <title>Introduction for Crop Master &mdash; Crop Master 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=8c72a3ca" />
@@ -48,10 +48,17 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">RsImg</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#read-from-a-file">Read from a file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#get-valid-mask">Get valid mask</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#save-to-tif-file">Save to tif file</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Introduction for Crop Master</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#rsimg">RsImg</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#create-rsimg-object">Create RsImg object</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#some-useful-methods">Some useful methods</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#farm">Farm</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">some useful methods</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#field">Field</a></li>
 </ul>
 </li>
 </ul>
@@ -74,7 +81,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
-      <li class="breadcrumb-item active">RsImg</li>
+      <li class="breadcrumb-item active">Introduction for Crop Master</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/tutorials/rsimg.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -84,12 +91,25 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="rsimg">
-<h1>RsImg<a class="headerlink" href="#rsimg" title="Link to this heading"></a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="introduction-for-crop-master">
+<h1>Introduction for Crop Master<a class="headerlink" href="#introduction-for-crop-master" title="Link to this heading"></a></h1>
+<p>The Crop Master is a python package created for digital agriculture. For now, the core of
+this package is to process the relationship between farm, field and image.</p>
+<ul class="simple">
+<li><p>Farm: farm can be considered as a collection of fields, and a farm can have many fields.</p></li>
+<li><p>Field: field is a field planted with crops</p></li>
+<li><p>Image: image is a remote sensing image, which can be satellite image or drone image.</p></li>
+</ul>
+<p>There are many useful packages which can be used for anlysis remote sensing image, but they
+usually don’t consider the relationship between farm, field and image. This package is created
+to solve this problem.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">RsImg</span></code> class is the core of this package, it is used to process remote sensing image.</p>
+<section id="rsimg">
+<h2>RsImg<a class="headerlink" href="#rsimg" title="Link to this heading"></a></h2>
 <p>We provide 2 ways to create RsImg object.
 One is to read from a file, the other is to create from a numpy array.</p>
-<section id="read-from-a-file">
-<h2>Read from a file<a class="headerlink" href="#read-from-a-file" title="Link to this heading"></a></h2>
+<section id="create-rsimg-object">
+<h3>Create RsImg object<a class="headerlink" href="#create-rsimg-object" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Read from a file</span>
 <span class="n">rsimg</span> <span class="o">=</span> <span class="n">RsImg</span><span class="o">.</span><span class="n">from_tif</span><span class="p">(</span><span class="s1">&#39;path/to/file.tif&#39;</span><span class="p">)</span>
 <span class="c1"># Read from a numpy array</span>
@@ -102,8 +122,8 @@ the date will be set to <code class="docutils literal notranslate"><span class="
 <p>the useful property of <code class="docutils literal notranslate"><span class="pre">RsImg</span></code> object is:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">ds</span></code>: gdal dataset, campatible with gdal API</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: the name of the image</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">date</span></code>: the date of the image</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: (str) the name of the image</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">date</span></code>: (str) the date of the image</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">nodatavalue</span></code>: the nodatavalue of the image</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">geotransform</span></code>: the geotransform of the image</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">projection</span></code>: the projection of the image</p></li>
@@ -112,20 +132,73 @@ the date will be set to <code class="docutils literal notranslate"><span class="
 <li><p><code class="docutils literal notranslate"><span class="pre">BANDS</span></code>: the bands of the image</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">dim</span></code>: the dimension of the image</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">x_min,</span> <span class="pre">x_max,</span> <span class="pre">y_min,</span> <span class="pre">y_max</span></code>: the boundary of the image</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">espg</span></code>: the espg of the image</p></li>
 </ul>
 </section>
-<section id="get-valid-mask">
-<h2>Get valid mask<a class="headerlink" href="#get-valid-mask" title="Link to this heading"></a></h2>
+<section id="some-useful-methods">
+<h3>Some useful methods<a class="headerlink" href="#some-useful-methods" title="Link to this heading"></a></h3>
+<p>Get valid mask</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mask</span> <span class="o">=</span> <span class="n">rsimg</span><span class="o">.</span><span class="n">valid_mask</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>the <code class="docutils literal notranslate"><span class="pre">mask</span></code> is a numpy array with shape (HEIGHT, WIDTH), the value is 0 or 1, 0 means no data, 1 means has valid data.</p>
-</section>
-<section id="save-to-tif-file">
-<h2>Save to tif file<a class="headerlink" href="#save-to-tif-file" title="Link to this heading"></a></h2>
+<p>Save to tif file</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rsimg</span><span class="o">.</span><span class="n">to_tif</span><span class="p">(</span><span class="s1">&#39;path/to/file.tif&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Select some bands from image</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rsimg</span><span class="o">.</span><span class="n">select_bands</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>It will return a new RsImg object with only 3 bands.</p>
+<p>Cluster image</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rsimg</span><span class="o">.</span><span class="n">cluster</span><span class="p">(</span><span class="n">cluster_number</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">if_add_position_encoding</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;kmeans&#39;</span><span class="p">,</span> 
+              <span class="n">select_bands</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filter_function</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>It will return a new RsImg object with only 1 band, the value of the band is the cluster number.
+Support methods: <code class="docutils literal notranslate"><span class="pre">kmeans</span></code>, <code class="docutils literal notranslate"><span class="pre">meanshift</span></code>, <code class="docutils literal notranslate"><span class="pre">dbscan</span></code>, <code class="docutils literal notranslate"><span class="pre">hierarchical</span></code>, <code class="docutils literal notranslate"><span class="pre">gaussian</span></code>, <code class="docutils literal notranslate"><span class="pre">spectral</span></code></p>
+</section>
+</section>
+<section id="farm">
+<h2>Farm<a class="headerlink" href="#farm" title="Link to this heading"></a></h2>
+<p>Attention: FarmWithOneImg has been deprecated, please use NewFarmWithOneImg instead.</p>
+<p>Farm is a collection of fields, and a farm can have many fields.</p>
+<p>Suggested transfer params:</p>
+<ul class="simple">
+<li><p>:param file: shp or geojson</p></li>
+<li><p>:param convert_dict: convert cols name in shp to standard cols name</p></li>
+<li><p>:param name: str Farm name</p></li>
+<li><p>:param gis_index_type: arcgis or qgis  This is used for init the index of field index,
+for Arcgis start from 0, and Qgis start from 1.</p></li>
+</ul>
+<p>The file can be a shp file or a geojson file, which is used to read by geopandas.
+Then return a <code class="docutils literal notranslate"><span class="pre">field_df</span></code> object, which is property of <code class="docutils literal notranslate"><span class="pre">Farm</span></code> object.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">fields</span></code> property is a list of <code class="docutils literal notranslate"><span class="pre">Field</span></code> object, which is created from <code class="docutils literal notranslate"><span class="pre">field_df</span></code>.</p>
+<section id="id1">
+<h3>some useful methods<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>get public property of fields</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">farm</span><span class="o">.</span><span class="n">get_geoDataFrame</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>export to json or shapefile</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">farm</span><span class="o">.</span><span class="n">to_file</span><span class="p">(</span><span class="s1">&#39;path/to/file.json&#39;</span><span class="p">)</span>
+<span class="n">farm</span><span class="o">.</span><span class="n">to_file</span><span class="p">(</span><span class="s1">&#39;path/to/file.shp&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>split multi-polygon to single polygon</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">farm</span><span class="o">.</span><span class="n">split_multipolygon_fields</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>find points in which field</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">farm</span><span class="o">.</span><span class="n">find_points_in_which_field</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span> <span class="n">split_multipolygon</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">df</span></code> must be a point GeoDataFrame</p>
+</section>
+</section>
+<section id="field">
+<h2>Field<a class="headerlink" href="#field" title="Link to this heading"></a></h2>
 </section>
 </section>
 
