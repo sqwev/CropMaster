@@ -1,19 +1,10 @@
-import os
-import warnings
-import numpy as np
-import pandas as pd
-import fiona
-import rtree
-import json
-import time
-import rasterio
-from rasterio.mask import raster_geometry_mask
+# -*- coding: utf-8 -*-
+# @author: Shenzhou Liu
+# @email: shenzhouliu@whu.edu.cn
+# @copyright: © 2024 Shenzhou Liu. All rights reserved.
 import pandas as pd
 import numpy as np
 import geopandas as gpd
-from osgeo import gdal, gdal_array, ogr, gdal, osr
-from tqdm import tqdm
-from shapely.geometry import Point, Polygon, shape, mapping
 
 from ..img.rsimg import RSImg, RestrictedDict
 

@@ -1,28 +1,26 @@
+# -*- coding: utf-8 -*-
+# @author: Shenzhou Liu
+# @email: shenzhouliu@whu.edu.cn
+# @copyright: © 2024 Shenzhou Liu. All rights reserved.
 import os
-import warnings
-import numpy as np
-import pandas as pd
 import fiona
-import rtree
 import json
-import time
 import uuid
 import rasterio
 from rasterio.mask import raster_geometry_mask
 import pandas as pd
 import numpy as np
-import shutil
-from osgeo import gdal, gdal_array, ogr, gdal, osr
+from osgeo import gdal
 from tqdm import tqdm
 from shapely.geometry import Point, Polygon, shape, mapping
 import geopandas as gpd
 import matplotlib.pyplot as plt
 from shapely.geometry import MultiPolygon, Polygon
+
 # private
 from ..img import RSImg, Sentinel2RSImg, tran_ds2tif_path, is_mem_dataset
-from ..shp import Farmshp
 from ..utils import find_points_in_which_polygon_v2
-from ..field import Field, FieldImg
+from ..field import Field
 
 from ..config import DISASTER_TYPE
 
@@ -706,14 +704,32 @@ class NewFarmWithOneImg:
             field_list = self.farm.fields
         # os.environ['CPL_DEBUG'] = 'ON'
         test_field = field_list[0]
-        # tif_path = tran_ds2tif_path(self.img.ds)
+        # vsi_mem_file_path  = tran_ds2tif_path(self.img.ds)
+        #
+        # # test gdal if can open
+        # print(f"vsi_mem_file_path : {vsi_mem_file_path }")
+        # test_ds = gdal.Open(vsi_mem_file_path )
+        # print(f"test_ds: {test_ds}")
+        # print(f"test_ds.RasterCount: {test_ds.RasterCount}")
+        # print(f"test_ds.RasterXSize: {test_ds.RasterXSize}")
+        # print(f"test_ds.RasterYSize: {test_ds.RasterYSize}")
+        #
+        # with rasterio.open(vsi_mem_file_path) as ref_src:
+        #     print(f"ref_src: {ref_src}")
+        #
+        #
+        # time.sleep(100)
+
+
         IS_MEM = is_mem_dataset(self.img.ds)
-        if IS_MEM:
-            tif_path = uuid.uuid1().hex + ".tif"
-            self.img.to_tif(tif_path)
-            print(f"Save temp tif to {tif_path}")
-        else:
-            tif_path = self.img.ds.GetDescription()
+
+
+        # if IS_MEM:
+        #     tif_path = uuid.uuid1().hex + ".tif"
+        #     self.img.to_tif(tif_path)
+        #     print(f"Save temp tif to {tif_path}")
+        # else:
+        #     tif_path = self.img.ds.GetDescription()
 
         if self.img.name is not None:
             img_name = self.img.name
@@ -721,93 +737,192 @@ class NewFarmWithOneImg:
             img_name = 'default'
             self.img.set_name(img_name)
 
-        # 使用rasterio.open()打开GDAL dataset对象
-        with rasterio.open(tif_path) as ref_src:
-            test_output = self.process_one_field_img(process_fun=process_fun,
-                                                     field=test_field,
-                                                     ref_src=ref_src,
-                                                     output_nodatavalue=output_nodatavalue,
-                                                     img_name=img_name,
-                                                     force_data_type=force_data_type)
-            test_field_output, test_field_geoTransform, test_field_height, test_field_width = test_output
-            # 检查维度
-            OUTPUT_DIM = len(test_field_output.shape)
-            if OUTPUT_DIM == 2:
-                output_height, output_width = test_field_output.shape
-            elif OUTPUT_DIM == 3:
-                output_bands, output_height, output_width = test_field_output.shape
-            else:
-                raise Exception(f"output dim: {OUTPUT_DIM} not supported")
-            # 检查长宽是否正确
-            if output_height != test_field_height or output_width != test_field_width:
-                raise Exception(
-                    f"output height: {output_height}, output width: {output_width} not equal " +
-                    f"to testfield height: {test_field_height}, testfield width: {test_field_width}")
-            else:
-                pass
-                # print(
-                #     f"output height: {output_height}, output width: {output_width} equal " +
-                #     f"to testfield height: {testfield_height}, testfield width: {testfield_width}")
+        if IS_MEM:
+            from affine import Affine
+            # use rasterio copy memory dataset
+            with rasterio.MemoryFile() as memfile:
+                with memfile.open(
+                    driver='GTiff',
+                    width=self.img.WIDTH,
+                    height=self.img.HEIGHT,
+                    count=self.img.BANDS,
+                    dtype=self.img.ds.ReadAsArray().dtype,
+                    crs=self.img.projection,
+                    # gdal geotransform to rasterio geotransform
+                    transform= Affine.from_gdal(*self.img.geoTransform)
+                ) as ref_src:
+                    ref_src.write(self.img.ds.ReadAsArray())
 
-            # 2. process
-            if OUTPUT_DIM == 2:
-                field_template_array = np.zeros((self.img.HEIGHT, self.img.WIDTH))
-                # 全部填充为nan
-                field_template_array[:] = np.nan
-            elif OUTPUT_DIM == 3:
-                field_template_array = np.zeros((output_bands, self.img.HEIGHT, self.img.WIDTH))
-                # 全部填充为nan
-                field_template_array[:] = np.nan
-            else:
-                raise Exception(f"output dim: {OUTPUT_DIM} not supported")
+                    test_output = self.process_one_field_img(process_fun=process_fun,
+                                                             field=test_field,
+                                                             ref_src=ref_src,
+                                                             output_nodatavalue=output_nodatavalue,
+                                                             img_name=img_name,
+                                                             force_data_type=force_data_type)
+                    test_field_output, test_field_geoTransform, test_field_height, test_field_width = test_output
+                    # 检查维度
+                    OUTPUT_DIM = len(test_field_output.shape)
+                    if OUTPUT_DIM == 2:
+                        output_height, output_width = test_field_output.shape
+                    elif OUTPUT_DIM == 3:
+                        output_bands, output_height, output_width = test_field_output.shape
+                    else:
+                        raise Exception(f"output dim: {OUTPUT_DIM} not supported")
+                    # 检查长宽是否正确
+                    if output_height != test_field_height or output_width != test_field_width:
+                        raise Exception(
+                            f"output height: {output_height}, output width: {output_width} not equal " +
+                            f"to testfield height: {test_field_height}, testfield width: {test_field_width}")
+                    else:
+                        pass
+                        # print(
+                        #     f"output height: {output_height}, output width: {output_width} equal " +
+                        #     f"to testfield height: {testfield_height}, testfield width: {testfield_width}")
 
-            farm_geoTransform = self.img.geoTransform
+                    # 2. process
+                    if OUTPUT_DIM == 2:
+                        field_template_array = np.zeros((self.img.HEIGHT, self.img.WIDTH))
+                        # 全部填充为nan
+                        field_template_array[:] = np.nan
+                    elif OUTPUT_DIM == 3:
+                        field_template_array = np.zeros((output_bands, self.img.HEIGHT, self.img.WIDTH))
+                        # 全部填充为nan
+                        field_template_array[:] = np.nan
+                    else:
+                        raise Exception(f"output dim: {OUTPUT_DIM} not supported")
 
-            for i, field in tqdm(enumerate(field_list)):
-                output = self.process_one_field_img(process_fun=process_fun,
-                                                    field=field,
-                                                    ref_src=ref_src,
-                                                    output_nodatavalue=output_nodatavalue,
-                                                    img_name=img_name,
-                                                    force_data_type=force_data_type)
+                    farm_geoTransform = self.img.geoTransform
 
-                field_output, field_geoTransform, field_height, field_width = output
+                    for i, field in tqdm(enumerate(field_list)):
+                        output = self.process_one_field_img(process_fun=process_fun,
+                                                            field=field,
+                                                            ref_src=ref_src,
+                                                            output_nodatavalue=output_nodatavalue,
+                                                            img_name=img_name,
+                                                            force_data_type=force_data_type)
 
-                col_min, row_max, col_max, row_min = self.find_field_pos_in_farm(field_geoTransform,
-                                                                                 farm_geoTransform,
-                                                                                 field_width,
-                                                                                 field_height)
+                        field_output, field_geoTransform, field_height, field_width = output
 
+                        col_min, row_max, col_max, row_min = self.find_field_pos_in_farm(field_geoTransform,
+                                                                                         farm_geoTransform,
+                                                                                         field_width,
+                                                                                         field_height)
+
+                        if OUTPUT_DIM == 2:
+                            field_template_array[row_min:row_max, col_min:col_max] = \
+                                np.where(
+                                    np.isnan(field_template_array[row_min:row_max, col_min:col_max]) & np.isnan(
+                                        field_output),
+                                    np.nan,
+                                    np.nan_to_num(field_template_array[row_min:row_max, col_min:col_max], nan=0) +
+                                    np.nan_to_num(field_output, nan=0))
+                        elif OUTPUT_DIM == 3:
+                            field_template_array[:, row_min:row_max, col_min:col_max] = \
+                                np.where(
+                                    np.isnan(field_template_array[:, row_min:row_max, col_min:col_max]) & np.isnan(
+                                        field_output),
+                                    np.nan,
+                                    np.nan_to_num(field_template_array[:, row_min:row_max, col_min:col_max], nan=0) +
+                                    np.nan_to_num(field_output, nan=0))
+
+                    if force_data_type is not None:
+                        # nan to nodatavalue
+                        field_template_array[np.isnan(field_template_array)] = output_nodatavalue
+                        field_template_array = field_template_array.astype(force_data_type)
+
+                    farm_res = RSImg.from_array(array=field_template_array, nodatavalue=output_nodatavalue,
+                                                projection=self.img.projection, geoTransform=self.img.geoTransform)
+
+        else:
+            tif_path = self.img.ds.GetDescription()
+
+            # 使用rasterio.open()打开GDAL dataset对象
+            with rasterio.open(tif_path) as ref_src:
+                test_output = self.process_one_field_img(process_fun=process_fun,
+                                                         field=test_field,
+                                                         ref_src=ref_src,
+                                                         output_nodatavalue=output_nodatavalue,
+                                                         img_name=img_name,
+                                                         force_data_type=force_data_type)
+                test_field_output, test_field_geoTransform, test_field_height, test_field_width = test_output
+                # 检查维度
+                OUTPUT_DIM = len(test_field_output.shape)
                 if OUTPUT_DIM == 2:
-                    field_template_array[row_min:row_max, col_min:col_max] = \
-                        np.where(
-                            np.isnan(field_template_array[row_min:row_max, col_min:col_max]) & np.isnan(
-                                field_output),
-                            np.nan,
-                            np.nan_to_num(field_template_array[row_min:row_max, col_min:col_max], nan=0) +
-                            np.nan_to_num(field_output, nan=0))
+                    output_height, output_width = test_field_output.shape
                 elif OUTPUT_DIM == 3:
-                    field_template_array[:, row_min:row_max, col_min:col_max] = \
-                        np.where(
-                            np.isnan(field_template_array[:, row_min:row_max, col_min:col_max]) & np.isnan(
-                                field_output),
-                            np.nan,
-                            np.nan_to_num(field_template_array[:, row_min:row_max, col_min:col_max], nan=0) +
-                            np.nan_to_num(field_output, nan=0))
+                    output_bands, output_height, output_width = test_field_output.shape
+                else:
+                    raise Exception(f"output dim: {OUTPUT_DIM} not supported")
+                # 检查长宽是否正确
+                if output_height != test_field_height or output_width != test_field_width:
+                    raise Exception(
+                        f"output height: {output_height}, output width: {output_width} not equal " +
+                        f"to testfield height: {test_field_height}, testfield width: {test_field_width}")
+                else:
+                    pass
+                    # print(
+                    #     f"output height: {output_height}, output width: {output_width} equal " +
+                    #     f"to testfield height: {testfield_height}, testfield width: {testfield_width}")
 
-            if force_data_type is not None:
-                # nan to nodatavalue
-                field_template_array[np.isnan(field_template_array)] = output_nodatavalue
-                field_template_array = field_template_array.astype(force_data_type)
+                # 2. process
+                if OUTPUT_DIM == 2:
+                    field_template_array = np.zeros((self.img.HEIGHT, self.img.WIDTH))
+                    # 全部填充为nan
+                    field_template_array[:] = np.nan
+                elif OUTPUT_DIM == 3:
+                    field_template_array = np.zeros((output_bands, self.img.HEIGHT, self.img.WIDTH))
+                    # 全部填充为nan
+                    field_template_array[:] = np.nan
+                else:
+                    raise Exception(f"output dim: {OUTPUT_DIM} not supported")
 
-            farm_res = RSImg.from_array(array=field_template_array, nodatavalue=output_nodatavalue,
-                                        projection=self.img.projection, geoTransform=self.img.geoTransform)
+                farm_geoTransform = self.img.geoTransform
+
+                for i, field in tqdm(enumerate(field_list)):
+                    output = self.process_one_field_img(process_fun=process_fun,
+                                                        field=field,
+                                                        ref_src=ref_src,
+                                                        output_nodatavalue=output_nodatavalue,
+                                                        img_name=img_name,
+                                                        force_data_type=force_data_type)
+
+                    field_output, field_geoTransform, field_height, field_width = output
+
+                    col_min, row_max, col_max, row_min = self.find_field_pos_in_farm(field_geoTransform,
+                                                                                     farm_geoTransform,
+                                                                                     field_width,
+                                                                                     field_height)
+
+                    if OUTPUT_DIM == 2:
+                        field_template_array[row_min:row_max, col_min:col_max] = \
+                            np.where(
+                                np.isnan(field_template_array[row_min:row_max, col_min:col_max]) & np.isnan(
+                                    field_output),
+                                np.nan,
+                                np.nan_to_num(field_template_array[row_min:row_max, col_min:col_max], nan=0) +
+                                np.nan_to_num(field_output, nan=0))
+                    elif OUTPUT_DIM == 3:
+                        field_template_array[:, row_min:row_max, col_min:col_max] = \
+                            np.where(
+                                np.isnan(field_template_array[:, row_min:row_max, col_min:col_max]) & np.isnan(
+                                    field_output),
+                                np.nan,
+                                np.nan_to_num(field_template_array[:, row_min:row_max, col_min:col_max], nan=0) +
+                                np.nan_to_num(field_output, nan=0))
+
+                if force_data_type is not None:
+                    # nan to nodatavalue
+                    field_template_array[np.isnan(field_template_array)] = output_nodatavalue
+                    field_template_array = field_template_array.astype(force_data_type)
+
+                farm_res = RSImg.from_array(array=field_template_array, nodatavalue=output_nodatavalue,
+                                            projection=self.img.projection, geoTransform=self.img.geoTransform)
 
         # delete tif
-        if IS_MEM:
-            time.sleep(1)
-            os.remove(tif_path)
-            print(f"Delete temp tif {tif_path}")
+        # if IS_MEM:
+        #     time.sleep(1)
+        #     os.remove(tif_path)
+        #     print(f"Delete temp tif {tif_path}")
         return farm_res
 
 

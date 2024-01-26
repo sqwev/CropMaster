@@ -5,15 +5,8 @@
 
 import os
 import re
-import ftplib
 import datetime
-import numpy as np
-import pandas as pd
-
-import time
-
 import rasterio
-
 from prettytable import PrettyTable
 from tqdm import tqdm
 

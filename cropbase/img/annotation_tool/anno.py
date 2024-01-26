@@ -4,19 +4,9 @@
 # @copyright: © 2024 Shenzhou Liu. All rights reserved.
 
 import os
-import warnings
-import fiona
-import rtree
 import json
-import time
-import rasterio
 import numpy as np
-import pandas as pd
 from tqdm import tqdm
-from rasterio.mask import raster_geometry_mask
-from rasterio.windows import Window
-from osgeo import gdal, gdal_array, ogr, osr
-from shapely.geometry import Point, Polygon, shape, mapping
 from scipy.sparse import coo_matrix
 from pycocotools.coco import COCO
 

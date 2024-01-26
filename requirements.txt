@@ -1,10 +1,12 @@
 numpy
 pandas
 tqdm
-rasterio
+fiona
 pycocotools
 prettytable
 geopandas
 sentinelhub[AWS] >= 3.10
 shapely ==1.8.5
 fiona==1.9.4
+scipy
+scikit-image

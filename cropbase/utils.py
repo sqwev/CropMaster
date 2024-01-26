@@ -1,6 +1,5 @@
 
 import fiona
-import rtree
 import json
 import os
 import rasterio
