@@ -19,11 +19,6 @@ JSON 为你提供了一种简单的格式来表示简单的地理特征以及它
 
 
 ```
-sentinelhub.config --instance_id "4d79f84c-1710-4b53-b9a5-b5ff6100cca1"
-sentinelhub.config --sh_client_id "3511904a-444c-4b82-816f-9a4d3efac43d" --sh_client_secret "cOE;,>gsH8I:IKl_}vgbSxk+(~hrPUSfVUXjROX2"
-#
-# 以下AWS的aws_access_key_id和aws_secret_access_key您可以更换为自己的
-sentinelhub.config --aws_access_key_id "AKIATCQZZQPQ2S4KJXUK" --aws_secret_access_key "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"
 
 ```
 
