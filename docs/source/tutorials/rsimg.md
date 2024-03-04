@@ -14,7 +14,8 @@ to solve this problem.
 The `RsImg` class is the core of this package, it is used to process remote sensing image.
 
 ## RsImg
-
+Now I abandon the `GDAL` package, and transfer to `rasterio` package, which is more convenient to use.
+the `ds` property of `RsImg` object is a `rasterio` dataset, which is compatible with `rasterio` API.
 We provide 2 ways to create RsImg object. 
 One is to read from a file, the other is to create from a numpy array.
 
