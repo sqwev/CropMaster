@@ -16,8 +16,8 @@ The `RsImg` class is the core of this package, it is used to process remote sens
 ## RsImg
 Now I abandon the `GDAL` package, and transfer to `rasterio` package, which is more convenient to use.
 the `ds` property of `RsImg` object is a `rasterio` dataset, which is compatible with `rasterio` API.
-We provide 2 ways to create RsImg object. 
-One is to read from a file, the other is to create from a numpy array.
+
+We provide 2 ways to create RsImg object. One is to read from a file, the other is to create from a numpy array.
 
 ### Create RsImg object
 
@@ -25,6 +25,10 @@ One is to read from a file, the other is to create from a numpy array.
 # Read from a file
 rsimg = RsImg.from_tif('path/to/file.tif')
 # Read from a numpy array
+array = np.random.rand(3, 100, 100) # input array should be C * H * W
+nodatavalue = 0
+geotransform = (0, 1, 0, 0, 0, 1) # geo transform support gdal format and affine format
+projection = 4326 # projection support gdal format, code and rasterio.crs.CRS format
 rsimg = RsImg.from_array(array, nodatavalue, geotransform, projection)
 ```
 
@@ -42,21 +46,75 @@ the useful property of `RsImg` object is:
 - `nodatavalue`: the nodatavalue of the image
 - `geotransform`: the geotransform of the image
 - `projection`: the projection of the image
-- `WIDTH`: the width of the image
-- `HEIGHT`: the height of the image
-- `BANDS`: the bands of the image
+- `width`: the width of the image
+- `height`: the height of the image
+- `bands`: the bands of the image
 - `dim`: the dimension of the image
-- `x_min, x_max, y_min, y_max`: the boundary of the image
-- `espg`: the espg of the image
 
 ### Some useful methods
+
+Get image array
+
+```python
+array = rsimg.array
+```
+
+
 
 Get valid mask
 
 ```python
-mask = rsimg.valid_mask()
+mask = rsimg.valid_mask
 ```
 the `mask` is a numpy array with shape (HEIGHT, WIDTH), the value is 0 or 1, 0 means no data, 1 means has valid data.
+
+Get tif border
+
+```python
+border = rsimg.border
+```
+
+Crop image by pixel position
+
+```python
+rsimg.crop_by_pixel(0, 0, 100, 100)
+```
+It will return a new RsImg object with shape (100, 100)
+
+Slide crop image
+
+```python
+rsimg.slide_crop(
+block_size = 256,
+overlap = 0.2,
+save_dir = 'path/to/save/dir'
+)
+```
+
+It will save the croped images to `save_dir` with name `{name}_x_y.tif`
+
+Cut image by shapefile
+
+```python
+cut_rsimg = rsimg.cut_by_shp('path/to/file.shp')
+```
+
+Reproject image
+
+```python
+rsimg_4326 = rsimg.reproject(4326)
+```
+
+Auto reproject image to utm
+
+```python
+rsimg_utm = rsimg.auto_reproject_to_utm()
+```
+
+
+
+
+
 
 Save to tif file
 
@@ -131,3 +189,5 @@ farm.find_points_in_which_field(df: gpd.GeoDataFrame, split_multipolygon: bool)
 
 
 ## Field
+
+

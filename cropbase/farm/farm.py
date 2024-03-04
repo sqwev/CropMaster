@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 from shapely.geometry import MultiPolygon, Polygon
 
 # private
-from ..img import RSImg, Sentinel2RSImg, tran_ds2tif_path, is_mem_dataset
+# from ..img import RSImg, Sentinel2RSImg, tran_ds2tif_path, is_mem_dataset
 from ..utils import find_points_in_which_polygon_v2
 from ..field import Field
 

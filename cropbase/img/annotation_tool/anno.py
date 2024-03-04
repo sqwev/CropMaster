@@ -10,7 +10,7 @@ from tqdm import tqdm
 from scipy.sparse import coo_matrix
 from pycocotools.coco import COCO
 
-from ...img import RSImg, Sentinel2RSImg
+
 from .utils import close_contour, binary_mask_to_polygon, singleMask2rle
 from ...config import DISASTER_TYPE
 
@@ -30,7 +30,6 @@ class FarmAnnotation:
     def __init__(self, block_size_x: int, block_size_y: int, repetition_rate: float, save_dir: str = None):
         if repetition_rate < 0 or repetition_rate > 1:
             raise Exception(f"repetition_rate: {repetition_rate} not in [0,1]")
-
 
         self.img_id = 1
         self.annotaion_id = 1
