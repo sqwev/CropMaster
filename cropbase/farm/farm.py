@@ -10,7 +10,6 @@ import rasterio
 from rasterio.mask import raster_geometry_mask
 import pandas as pd
 import numpy as np
-from osgeo import gdal
 from tqdm import tqdm
 from shapely.geometry import Point, Polygon, shape, mapping
 import geopandas as gpd
@@ -18,409 +17,9 @@ import matplotlib.pyplot as plt
 from shapely.geometry import MultiPolygon, Polygon
 
 # private
-# from ..img import RSImg, Sentinel2RSImg, tran_ds2tif_path, is_mem_dataset
-from ..utils import find_points_in_which_polygon_v2
+from ..img import RsImg
 from ..field import Field
-
 from ..config import DISASTER_TYPE
-
-
-class FarmWithOneImg:
-    """
-    This class is deprecated
-    """
-    img = None
-    features = None
-
-    def __init__(self, tif_path, farm_shp_path, year=None):
-        raise Exception("The method is deprecated")
-        print(f"*********Init Farm*********")
-        self.tif_path = tif_path
-        self.farm_shp_path = farm_shp_path
-
-        self.img = RSImg(tif_path=self.tif_path)
-        self.shp = Farmshp(farm_shp_path=self.farm_shp_path)
-        self.year = year
-
-        # 输入的shp必须没有multipolygon
-        IFMULTIPOLYGON = self.shp.IFMULTIPOLYGON
-        if IFMULTIPOLYGON:
-            self.farm_shp_path = self.shp.split_shp()
-            self.shp = Farmshp(farm_shp_path=self.farm_shp_path)
-            IFMULTIPOLYGON = self.shp.IFMULTIPOLYGON
-
-        # tif内容
-        self.ds = gdal.Open(self.tif_path)
-        self.projection = self.ds.GetProjection()
-        self.geoTransform = self.ds.GetGeoTransform()
-        # shp内容
-        self.features = fiona.open(self.farm_shp_path)
-
-        # 检查坐标系是否一致
-        tif_espg = self.img.espg()
-        shp_espg = self.shp.get_espg()
-        if tif_espg != shp_espg:
-            self.farm_shp_path = self.shp.reproject(tif_espg)
-            self.shp = Farmshp(farm_shp_path=self.farm_shp_path)
-            # raise Exception(f"tif_espg: {tif_espg}, shp_espg: {shp_espg}, they are not equal")
-        else:
-            print(f"tif_espg: {tif_espg}, shp_espg: {shp_espg}, they are equal")
-        print(f"tif path: {self.tif_path}\nshp path: {self.farm_shp_path}")
-        print(f"*********Farm init finished*********")
-
-    def process_by_field(self, features, process_fun, input_nodatavalue,
-                         output_nodatavalue, force_data_type=None, field_id_list=None):
-        """
-        features是fiona.open读取的shp文件，是一个可迭代对象
-        process_fun是一个函数，输入的是array和properties，输出是array,输入和输出的array中的nodatavalue都是np.nan
-        nodatavalue是输出的tif中的nodatavalue;关键字传参，传递field对象
-        force_data_type是输出的tif中的数据类型，如果为None，则输出的tif中的数据类型一般为float32
-
-        这个程序用于处理一个tif中的所有田块，每个田块的处理结果是一个array，对每个田块的array进行处理，
-        返回一个与田块大小相同的array，将所有田块的array填充到这个array中，最后返回一个RSImg对象
-        """
-
-        def field_meta2geoTransform(meta):
-            x_res, y_res = meta['transform'].a, meta['transform'].e
-            x_min, y_min = meta['transform'].c, meta['transform'].f
-            field_geoTransform = (x_min, x_res, 0, y_min, 0, y_res)
-            return field_geoTransform
-
-        with rasterio.open(self.tif_path) as ref_src:
-            field_meta = ref_src.meta.copy()
-            ref_width, ref_height = ref_src.width, ref_src.height
-            # 先使用一个field测试返回的数组的维度，长宽是否正确
-            if field_id_list is not None:
-                testfieldid = field_id_list[0]
-                testfield = features[testfieldid]
-            else:
-                testfieldid = 0
-                testfield = features[testfieldid]
-
-            ploygon = testfield['geometry']
-            properties = testfield["properties"]
-            testfield_image, testfield_transform = rasterio.mask.mask(ref_src, [ploygon], crop=True)
-            testfield_dim = len(testfield_image.shape)
-            if testfield_dim == 2:
-                testfield_height, testfield_width = testfield_image.shape
-                # print(f"testfield_shape:{testfield_image.shape}")
-            elif testfield_dim == 3:
-                testfield_bands, testfield_height, testfield_width = testfield_image.shape
-                # print(f"testfield_bands:{testfield_bands},testfield_width:{testfield_width},testfield_height:{testfield_height}")
-            field_meta.update({"height": testfield_height,
-                               "width": testfield_width,
-                               "transform": testfield_transform})
-
-            field_geoTransform = field_meta2geoTransform(field_meta)
-            field_projection = self.img.projection
-            field = Field()
-            field.set_fieldid(testfieldid)
-            field.set_img(RSImg(array=testfield_image, nodatavalue=input_nodatavalue, projection=field_projection,
-                                geoTransform=field_geoTransform))
-            field.set_properties(properties)
-            output = process_fun(field=field)
-
-            # 检查维度
-            output_dim = len(output.shape)
-            if output_dim == 2:
-                output_height, output_width = output.shape
-            elif output_dim == 3:
-                output_bands, output_height, output_width = output.shape
-            else:
-                raise Exception(f"output dim: {output_dim} not supported")
-            # 检查长宽是否正确
-            if output_height != testfield_height or output_width != testfield_width:
-                raise Exception(
-                    f"output height: {output_height}, output width: {output_width} not equal " +
-                    f"to testfield height: {testfield_height}, testfield width: {testfield_width}")
-            else:
-                print(
-                    f"output height: {output_height}, output width: {output_width} equal " +
-                    f"to testfield height: {testfield_height}, testfield width: {testfield_width}")
-
-            # 开始处理
-
-            if output_dim == 2:
-                field_template_array = np.zeros((self.img.HEIGHT, self.img.WIDTH))
-                # 全部填充为nan
-                field_template_array[:] = np.nan
-
-            elif output_dim == 3:
-                field_template_array = np.zeros((output_bands, self.img.HEIGHT, self.img.WIDTH))
-                # 全部填充为nan
-                field_template_array[:] = np.nan
-
-            for i, field in tqdm(enumerate(features)):
-                if field_id_list is not None:
-                    if i not in field_id_list:
-                        continue
-                ploygon = field['geometry']
-                properties = field["properties"]
-                properties['id'] = i
-                field_image, field_transform = rasterio.mask.mask(ref_src, [ploygon], crop=True)
-                field_dim = len(field_image.shape)
-                if field_dim == 2:
-                    field_height, field_width = field_image.shape
-                    # print(f"field_width:{field_width},field_height:{field_height}")
-                elif field_dim == 3:
-                    field_bands, field_height, field_width = field_image.shape
-                    # print(f"field_bands:{field_bands},field_width:{field_width},field_height:{field_height}")
-
-                field_meta.update({"height": field_height,
-                                   "width": field_width,
-                                   "transform": field_transform})
-                x_res, y_res = field_meta['transform'].a, field_meta['transform'].e
-                x_min, y_min = field_meta['transform'].c, field_meta['transform'].f
-                x_max = x_min + x_res * field_width
-                y_max = y_min + y_res * field_height
-                # print(f"x_res:{x_res},y_res:{y_res}, x_min:{x_min}, y_min:{y_min}, x_max:{x_max}, y_max:{y_max}")
-                field_geoTransform = field_meta2geoTransform(field_meta)
-                field_projection = self.img.projection
-
-                # 计算在田块中的位置
-                farm_geoTransform = self.geoTransform
-                col_min = int(round((x_min - farm_geoTransform[0]) / farm_geoTransform[1], 0))
-                row_max = int(round((y_max - farm_geoTransform[3]) / farm_geoTransform[5], 0))
-                col_max = int(round((x_max - farm_geoTransform[0]) / farm_geoTransform[1], 0))
-                row_min = int(round((y_min - farm_geoTransform[3]) / farm_geoTransform[5], 0))
-
-                field = Field()
-                field.set_fieldid(i)
-                field.set_img(
-                    Sentinel2RSImg(array=field_image, nodatavalue=input_nodatavalue, projection=field_projection,
-                                   geoTransform=field_geoTransform))
-                field.set_properties(properties)
-                output = process_fun(field=field)
-
-                # 将田块内的值填充到filled_array中
-                if output_dim == 2:
-                    field_template_array[row_min:row_max, col_min:col_max] = \
-                        np.where(np.isnan(field_template_array[row_min:row_max, col_min:col_max]) & np.isnan(output),
-                                 np.nan,
-                                 np.nan_to_num(field_template_array[row_min:row_max, col_min:col_max], nan=0) +
-                                 np.nan_to_num(output, nan=0))
-                elif output_dim == 3:
-                    field_template_array[:, row_min:row_max, col_min:col_max] = \
-                        np.where(np.isnan(field_template_array[:, row_min:row_max, col_min:col_max]) & np.isnan(output),
-                                 np.nan,
-                                 np.nan_to_num(field_template_array[:, row_min:row_max, col_min:col_max], nan=0) +
-                                 np.nan_to_num(output, nan=0))
-
-            if force_data_type is not None:
-                # nan to nodatavalue
-                field_template_array[np.isnan(field_template_array)] = output_nodatavalue
-                field_template_array = field_template_array.astype(force_data_type)
-
-            farm_res = RSImg(array=field_template_array, nodatavalue=output_nodatavalue, projection=self.projection,
-                             geoTransform=self.geoTransform)
-            return farm_res
-
-    def select_field(self, fieldid: str):
-        """
-        fieldid: 田块的id
-        return: FieldImg对象
-        """
-        # 根据fieldid，从shp中选择出对应的田块
-        # 返回田块的geometry, properties, fieldid, field_array
-        field = {}
-
-        for feature in self.features:
-            # print(f"feature id : {feature['id']}")
-            # print(type(feature['id']))
-            if feature['id'] == str(fieldid):
-                field_geom = feature['geometry']
-                field_properties = feature['properties']
-                field['fieldid'] = fieldid
-                field['geometry'] = field_geom
-                field['properties'] = field_properties
-
-        # 从sentinel2影像中，根据field_geom，裁剪出对应的田块
-        with rasterio.open(self.tif_path) as src:
-            out_meta = src.meta.copy()
-            out_image, out_transform = rasterio.mask.mask(src, [field["geometry"]], crop=True)
-            out_meta.update({"driver": "GTiff",
-                             "height": out_image.shape[1],
-                             "width": out_image.shape[2],
-                             "transform": out_transform})
-
-            field_width, field_height = out_image.shape[2], out_image.shape[1]
-
-            x_res, y_res = out_meta['transform'].a, out_meta['transform'].e
-            x_min, y_min = out_meta['transform'].c, out_meta['transform'].f
-
-            x_max = x_min + x_res * field_width
-            y_max = y_min + y_res * field_height
-            # print(f"x_res:{x_res},y_res:{y_res}, x_min:{x_min}, y_min:{y_min}, x_max:{x_max}, y_max:{y_max}")
-            field_geoTransform = (x_min, x_res, 0, y_min, 0, y_res)  # 这里用的是左上角的坐标， ymin
-
-        field_obj = Field()
-        field_obj.set_fieldid(fieldid)
-        field_obj.set_img(Sentinel2RSImg(array=out_image, nodatavalue=0))
-        field_obj.set_properties(field["properties"])
-        field_obj.img.set_projection(self.projection)
-        field_obj.img.set_geoTransform(field_geoTransform)
-        return field_obj
-
-    # 做数据集的
-    def gen_yield(self, savepath, yielddf, if_aug, gentif=True):
-        field_res = find_points_in_which_polygon_v2(yielddf, shp_path=self.farm_shp_path)
-        # print(f"field_res: {field_res}")
-        field_id_list = list(field_res.keys())
-        print(f"field_id_list: {field_id_list}")
-
-        def gen_augyield_by_field(**kwargs):
-
-            field = kwargs["field"]
-            field_sample_yield = field_res[field.fieldid]['points']
-            field.set_yielddf(field_sample_yield)
-
-            if len(field.yielddf) == 0:
-                yield_mask = np.zeros((field.img.HEIGHT, field.img.WIDTH))
-                yield_mask[:] = np.nan
-                return yield_mask
-
-            field.yielddf.rename(columns={"cropyield": "value"}, inplace=True)
-
-            cluster_mask = field.img.cluster(cluster_number=10, if_add_position_encoding=True, method='kmeans').array
-
-            yield_mask = field.gen_aug_mask(cluster_mask, location_df=field.yielddf)
-
-            return yield_mask
-
-        def gen_yield_by_field(**kwargs):
-
-            field = kwargs["field"]
-            field_sample_yield = field_res[field.fieldid]['points']
-
-            field.set_yielddf(field_sample_yield)
-
-            if len(field.yielddf) == 0:
-                yield_mask = np.zeros((field.img.HEIGHT, field.img.WIDTH))
-                yield_mask[:] = np.nan
-                return yield_mask
-
-            field.yielddf.rename(columns={"cropyield": "value"}, inplace=True)
-            # 直接将点映射到tif中
-            valid_mask = field.img.valid_mask
-            # print(f"valid_mask: {valid_mask}")
-            # 创建一个空的array
-            yield_mask = np.zeros((field.img.HEIGHT, field.img.WIDTH))
-            # 全部填充为-1
-            yield_mask[:] = -1
-
-            for i in range(len(field.yielddf)):
-                col_idx = field.yielddf.iloc[i]['col_idx']
-                row_idx = field.yielddf.iloc[i]['row_idx']
-                col_idx = int(col_idx)
-                row_idx = int(row_idx)
-                if valid_mask[row_idx, col_idx] == 0:
-                    print(f"point:{col_idx}, {row_idx} not in field")
-                    continue
-                yield_mask[row_idx, col_idx] = field.yielddf.iloc[i]['value']
-            # -1 to nan
-            yield_mask[yield_mask == -1] = np.nan
-            return yield_mask
-
-        if if_aug:
-            yield_img = self.process_by_field(features=self.features, process_fun=gen_augyield_by_field,
-                                              input_nodatavalue=0,
-                                              output_nodatavalue=-1,
-                                              force_data_type=np.float32, field_id_list=field_id_list)
-        else:
-            yield_img = self.process_by_field(features=self.features, process_fun=gen_yield_by_field,
-                                              input_nodatavalue=0,
-                                              output_nodatavalue=-1,
-                                              force_data_type=np.float32, field_id_list=field_id_list)
-
-        # 0-1 配色
-
-        if gentif:
-            yield_img.gen_tif(savepath=savepath)
-        else:
-            return yield_img
-
-    def gen_disaster(self, savepath, disaster_type_df):
-        disaster_type_dict = {
-            "waterlogging": 1,
-            "drought": 2,
-            "flood": 3,
-            "lodge": 4,
-            "nodisaster": 0
-        }
-        pixel_disaster_type_dict = {v: DISASTER_TYPE.text2value_dict[k] for k, v in disaster_type_dict.items()}
-        print(f"pixel_disaster_type_dict: {pixel_disaster_type_dict}")
-
-        field_res = find_points_in_which_polygon_v2(disaster_type_df, shp_path=self.farm_shp_path)
-        # print(f"field_res: {field_res}")
-        field_id_list = list(field_res.keys())
-        print(f"field_id_list: {field_id_list}")
-
-        def gen_disaster_mask_by_field(**kwargs):
-            field = kwargs["field"]
-            fieldid = field.fieldid
-            field_sample_yield = field_res[fieldid]['points']
-            field_sample_yield['cropyield'] = field_sample_yield['disastertype'].apply(lambda x: disaster_type_dict[x])
-            field.set_yielddf(field_sample_yield)
-            field.yielddf.rename(columns={"cropyield": "value"}, inplace=True)
-            # if field.fielddf is empty, return nan
-            if len(field.yielddf) == 0:
-                yield_mask = np.zeros((field.img.HEIGHT, field.img.WIDTH))
-                yield_mask[:] = np.nan
-                return yield_mask
-            cluster_mask = field.img.cluster(cluster_number=10, if_add_position_encoding=True, method='kmeans').array
-            yield_mask = field.gen_aug_mask(cluster_mask, location_df=field.yielddf, type="max_point_number")
-            # 赋予RGB颜色
-            return yield_mask
-
-        disaster_img = self.process_by_field(features=self.features, process_fun=gen_disaster_mask_by_field,
-                                             input_nodatavalue=0,
-                                             output_nodatavalue=0,
-                                             force_data_type=np.uint8, field_id_list=field_id_list)
-        disaster_img.gen_tif(savepath=savepath)
-
-    def gen_croptype_mask(self, savepath):
-        global fieldid
-        global farm_crop_dict
-        farm_crop_dict = {}
-        fieldid = 0
-
-        def gen_croptype_mask_by_field(**kwargs):
-            global fieldid
-            global farm_crop_dict
-            field = kwargs["field"]
-            crop_dict2023 = {
-                "1": "Rice",
-                "2": "Maize",
-                "3": "Soybean",
-                "4": "Other",
-                "5": "Wheat"
-            }
-            # 生成json文件，存储每个数值对应的作物种类
-            cropid = field.properties['CROP_ID']
-            croptype = crop_dict2023[cropid]
-            fieldid += 1
-            farm_crop_dict[fieldid] = croptype
-            # print(farm_crop_dict)
-            valid_mask = field.img.valid_mask
-            # 1 to fieldid
-            valid_mask[valid_mask == 1] = fieldid
-
-            return valid_mask
-
-        croptype_img = self.process_by_field(features=self.features, process_fun=gen_croptype_mask_by_field,
-                                             input_nodatavalue=0,
-                                             output_nodatavalue=0,
-                                             force_data_type=np.uint16)
-
-        print(fieldid)
-        #  > fieldid的值，全部赋值为0
-        croptype_img.array[croptype_img.array > fieldid] = 0
-
-        croptype_img.gen_tif(savepath=savepath)
-        # 生成json文件，存储每个数值对应的作物种类
-        json_savepath = os.path.join(os.path.dirname(savepath), "farm_crop_dict.json")
-        with open(json_savepath, "w") as f:
-            json.dump(farm_crop_dict, f, indent=4)
 
 
 class Farm:
@@ -470,7 +69,6 @@ class Farm:
 
         # 遍历每个地块
         self.fields = self.get_fields(self.fields_df, self.crs)
-
         self.gis_index_type = kwargs.get("gis_index_type", "arcgis")
 
     def __getitem__(self, item):
@@ -669,7 +267,7 @@ class Farm:
         return all(geom.type == 'Point' for geom in gdf['geometry'])
 
 
-class NewFarmWithOneImg:
+class FarmWithOneImg:
     def __init__(self, img, farm):
         """
         A farm object with one image
@@ -677,8 +275,27 @@ class NewFarmWithOneImg:
         :param img: RSImg object
         :param farm: Farm object
         """
+        if isinstance(img, str):
+            img = RsImg.from_tif(img)
+        if isinstance(farm, str):
+            farm = Farm(file=farm)
+
         self.img = img
         self.farm = farm
+
+    def select_field(self, field_id):
+        """
+        select field by field_id
+
+        :param field_id: int
+        :return: Field object
+        """
+        field = self.farm.fields[field_id]
+        field_geometry = field.geometry
+        field_img = self.img.cut_by_geometry(field_geometry)
+        field.register_img(field_img, field_img.name)
+        return field
+
 
     def process_by_field_img(self, process_fun, output_nodatavalue=0, force_data_type=None, field_list=None):
         # """
@@ -704,32 +321,6 @@ class NewFarmWithOneImg:
             field_list = self.farm.fields
         # os.environ['CPL_DEBUG'] = 'ON'
         test_field = field_list[0]
-        # vsi_mem_file_path  = tran_ds2tif_path(self.img.ds)
-        #
-        # # test gdal if can open
-        # print(f"vsi_mem_file_path : {vsi_mem_file_path }")
-        # test_ds = gdal.Open(vsi_mem_file_path )
-        # print(f"test_ds: {test_ds}")
-        # print(f"test_ds.RasterCount: {test_ds.RasterCount}")
-        # print(f"test_ds.RasterXSize: {test_ds.RasterXSize}")
-        # print(f"test_ds.RasterYSize: {test_ds.RasterYSize}")
-        #
-        # with rasterio.open(vsi_mem_file_path) as ref_src:
-        #     print(f"ref_src: {ref_src}")
-        #
-        #
-        # time.sleep(100)
-
-
-        IS_MEM = is_mem_dataset(self.img.ds)
-
-
-        # if IS_MEM:
-        #     tif_path = uuid.uuid1().hex + ".tif"
-        #     self.img.to_tif(tif_path)
-        #     print(f"Save temp tif to {tif_path}")
-        # else:
-        #     tif_path = self.img.ds.GetDescription()
 
         if self.img.name is not None:
             img_name = self.img.name
@@ -737,186 +328,90 @@ class NewFarmWithOneImg:
             img_name = 'default'
             self.img.set_name(img_name)
 
-        if IS_MEM:
-            from affine import Affine
-            # use rasterio copy memory dataset
-            with rasterio.MemoryFile() as memfile:
-                with memfile.open(
-                    driver='GTiff',
-                    width=self.img.WIDTH,
-                    height=self.img.HEIGHT,
-                    count=self.img.BANDS,
-                    dtype=self.img.ds.ReadAsArray().dtype,
-                    crs=self.img.projection,
-                    # gdal geotransform to rasterio geotransform
-                    transform= Affine.from_gdal(*self.img.geoTransform)
-                ) as ref_src:
-                    ref_src.write(self.img.ds.ReadAsArray())
 
-                    test_output = self.process_one_field_img(process_fun=process_fun,
-                                                             field=test_field,
-                                                             ref_src=ref_src,
-                                                             output_nodatavalue=output_nodatavalue,
-                                                             img_name=img_name,
-                                                             force_data_type=force_data_type)
-                    test_field_output, test_field_geoTransform, test_field_height, test_field_width = test_output
-                    # 检查维度
-                    OUTPUT_DIM = len(test_field_output.shape)
-                    if OUTPUT_DIM == 2:
-                        output_height, output_width = test_field_output.shape
-                    elif OUTPUT_DIM == 3:
-                        output_bands, output_height, output_width = test_field_output.shape
-                    else:
-                        raise Exception(f"output dim: {OUTPUT_DIM} not supported")
-                    # 检查长宽是否正确
-                    if output_height != test_field_height or output_width != test_field_width:
-                        raise Exception(
-                            f"output height: {output_height}, output width: {output_width} not equal " +
-                            f"to testfield height: {test_field_height}, testfield width: {test_field_width}")
-                    else:
-                        pass
-                        # print(
-                        #     f"output height: {output_height}, output width: {output_width} equal " +
-                        #     f"to testfield height: {testfield_height}, testfield width: {testfield_width}")
+        tif_path = self.img.ds.GetDescription()
 
-                    # 2. process
-                    if OUTPUT_DIM == 2:
-                        field_template_array = np.zeros((self.img.HEIGHT, self.img.WIDTH))
-                        # 全部填充为nan
-                        field_template_array[:] = np.nan
-                    elif OUTPUT_DIM == 3:
-                        field_template_array = np.zeros((output_bands, self.img.HEIGHT, self.img.WIDTH))
-                        # 全部填充为nan
-                        field_template_array[:] = np.nan
-                    else:
-                        raise Exception(f"output dim: {OUTPUT_DIM} not supported")
+        # 使用rasterio.open()打开GDAL dataset对象
+        with rasterio.open(tif_path) as ref_src:
+            test_output = self.process_one_field_img(process_fun=process_fun,
+                                                     field=test_field,
+                                                     ref_src=ref_src,
+                                                     output_nodatavalue=output_nodatavalue,
+                                                     img_name=img_name,
+                                                     force_data_type=force_data_type)
+            test_field_output, test_field_geoTransform, test_field_height, test_field_width = test_output
+            # 检查维度
+            OUTPUT_DIM = len(test_field_output.shape)
+            if OUTPUT_DIM == 2:
+                output_height, output_width = test_field_output.shape
+            elif OUTPUT_DIM == 3:
+                output_bands, output_height, output_width = test_field_output.shape
+            else:
+                raise Exception(f"output dim: {OUTPUT_DIM} not supported")
+            # 检查长宽是否正确
+            if output_height != test_field_height or output_width != test_field_width:
+                raise Exception(
+                    f"output height: {output_height}, output width: {output_width} not equal " +
+                    f"to testfield height: {test_field_height}, testfield width: {test_field_width}")
+            else:
+                pass
+                # print(
+                #     f"output height: {output_height}, output width: {output_width} equal " +
+                #     f"to testfield height: {testfield_height}, testfield width: {testfield_width}")
 
-                    farm_geoTransform = self.img.geoTransform
+            # 2. process
+            if OUTPUT_DIM == 2:
+                field_template_array = np.zeros((self.img.HEIGHT, self.img.WIDTH))
+                # 全部填充为nan
+                field_template_array[:] = np.nan
+            elif OUTPUT_DIM == 3:
+                field_template_array = np.zeros((output_bands, self.img.HEIGHT, self.img.WIDTH))
+                # 全部填充为nan
+                field_template_array[:] = np.nan
+            else:
+                raise Exception(f"output dim: {OUTPUT_DIM} not supported")
 
-                    for i, field in tqdm(enumerate(field_list)):
-                        output = self.process_one_field_img(process_fun=process_fun,
-                                                            field=field,
-                                                            ref_src=ref_src,
-                                                            output_nodatavalue=output_nodatavalue,
-                                                            img_name=img_name,
-                                                            force_data_type=force_data_type)
+            farm_geoTransform = self.img.geoTransform
 
-                        field_output, field_geoTransform, field_height, field_width = output
+            for i, field in tqdm(enumerate(field_list)):
+                output = self.process_one_field_img(process_fun=process_fun,
+                                                    field=field,
+                                                    ref_src=ref_src,
+                                                    output_nodatavalue=output_nodatavalue,
+                                                    img_name=img_name,
+                                                    force_data_type=force_data_type)
 
-                        col_min, row_max, col_max, row_min = self.find_field_pos_in_farm(field_geoTransform,
-                                                                                         farm_geoTransform,
-                                                                                         field_width,
-                                                                                         field_height)
+                field_output, field_geoTransform, field_height, field_width = output
 
-                        if OUTPUT_DIM == 2:
-                            field_template_array[row_min:row_max, col_min:col_max] = \
-                                np.where(
-                                    np.isnan(field_template_array[row_min:row_max, col_min:col_max]) & np.isnan(
-                                        field_output),
-                                    np.nan,
-                                    np.nan_to_num(field_template_array[row_min:row_max, col_min:col_max], nan=0) +
-                                    np.nan_to_num(field_output, nan=0))
-                        elif OUTPUT_DIM == 3:
-                            field_template_array[:, row_min:row_max, col_min:col_max] = \
-                                np.where(
-                                    np.isnan(field_template_array[:, row_min:row_max, col_min:col_max]) & np.isnan(
-                                        field_output),
-                                    np.nan,
-                                    np.nan_to_num(field_template_array[:, row_min:row_max, col_min:col_max], nan=0) +
-                                    np.nan_to_num(field_output, nan=0))
+                col_min, row_max, col_max, row_min = self.find_field_pos_in_farm(field_geoTransform,
+                                                                                 farm_geoTransform,
+                                                                                 field_width,
+                                                                                 field_height)
 
-                    if force_data_type is not None:
-                        # nan to nodatavalue
-                        field_template_array[np.isnan(field_template_array)] = output_nodatavalue
-                        field_template_array = field_template_array.astype(force_data_type)
-
-                    farm_res = RSImg.from_array(array=field_template_array, nodatavalue=output_nodatavalue,
-                                                projection=self.img.projection, geoTransform=self.img.geoTransform)
-
-        else:
-            tif_path = self.img.ds.GetDescription()
-
-            # 使用rasterio.open()打开GDAL dataset对象
-            with rasterio.open(tif_path) as ref_src:
-                test_output = self.process_one_field_img(process_fun=process_fun,
-                                                         field=test_field,
-                                                         ref_src=ref_src,
-                                                         output_nodatavalue=output_nodatavalue,
-                                                         img_name=img_name,
-                                                         force_data_type=force_data_type)
-                test_field_output, test_field_geoTransform, test_field_height, test_field_width = test_output
-                # 检查维度
-                OUTPUT_DIM = len(test_field_output.shape)
                 if OUTPUT_DIM == 2:
-                    output_height, output_width = test_field_output.shape
+                    field_template_array[row_min:row_max, col_min:col_max] = \
+                        np.where(
+                            np.isnan(field_template_array[row_min:row_max, col_min:col_max]) & np.isnan(
+                                field_output),
+                            np.nan,
+                            np.nan_to_num(field_template_array[row_min:row_max, col_min:col_max], nan=0) +
+                            np.nan_to_num(field_output, nan=0))
                 elif OUTPUT_DIM == 3:
-                    output_bands, output_height, output_width = test_field_output.shape
-                else:
-                    raise Exception(f"output dim: {OUTPUT_DIM} not supported")
-                # 检查长宽是否正确
-                if output_height != test_field_height or output_width != test_field_width:
-                    raise Exception(
-                        f"output height: {output_height}, output width: {output_width} not equal " +
-                        f"to testfield height: {test_field_height}, testfield width: {test_field_width}")
-                else:
-                    pass
-                    # print(
-                    #     f"output height: {output_height}, output width: {output_width} equal " +
-                    #     f"to testfield height: {testfield_height}, testfield width: {testfield_width}")
+                    field_template_array[:, row_min:row_max, col_min:col_max] = \
+                        np.where(
+                            np.isnan(field_template_array[:, row_min:row_max, col_min:col_max]) & np.isnan(
+                                field_output),
+                            np.nan,
+                            np.nan_to_num(field_template_array[:, row_min:row_max, col_min:col_max], nan=0) +
+                            np.nan_to_num(field_output, nan=0))
 
-                # 2. process
-                if OUTPUT_DIM == 2:
-                    field_template_array = np.zeros((self.img.HEIGHT, self.img.WIDTH))
-                    # 全部填充为nan
-                    field_template_array[:] = np.nan
-                elif OUTPUT_DIM == 3:
-                    field_template_array = np.zeros((output_bands, self.img.HEIGHT, self.img.WIDTH))
-                    # 全部填充为nan
-                    field_template_array[:] = np.nan
-                else:
-                    raise Exception(f"output dim: {OUTPUT_DIM} not supported")
+            if force_data_type is not None:
+                # nan to nodatavalue
+                field_template_array[np.isnan(field_template_array)] = output_nodatavalue
+                field_template_array = field_template_array.astype(force_data_type)
 
-                farm_geoTransform = self.img.geoTransform
-
-                for i, field in tqdm(enumerate(field_list)):
-                    output = self.process_one_field_img(process_fun=process_fun,
-                                                        field=field,
-                                                        ref_src=ref_src,
-                                                        output_nodatavalue=output_nodatavalue,
-                                                        img_name=img_name,
-                                                        force_data_type=force_data_type)
-
-                    field_output, field_geoTransform, field_height, field_width = output
-
-                    col_min, row_max, col_max, row_min = self.find_field_pos_in_farm(field_geoTransform,
-                                                                                     farm_geoTransform,
-                                                                                     field_width,
-                                                                                     field_height)
-
-                    if OUTPUT_DIM == 2:
-                        field_template_array[row_min:row_max, col_min:col_max] = \
-                            np.where(
-                                np.isnan(field_template_array[row_min:row_max, col_min:col_max]) & np.isnan(
-                                    field_output),
-                                np.nan,
-                                np.nan_to_num(field_template_array[row_min:row_max, col_min:col_max], nan=0) +
-                                np.nan_to_num(field_output, nan=0))
-                    elif OUTPUT_DIM == 3:
-                        field_template_array[:, row_min:row_max, col_min:col_max] = \
-                            np.where(
-                                np.isnan(field_template_array[:, row_min:row_max, col_min:col_max]) & np.isnan(
-                                    field_output),
-                                np.nan,
-                                np.nan_to_num(field_template_array[:, row_min:row_max, col_min:col_max], nan=0) +
-                                np.nan_to_num(field_output, nan=0))
-
-                if force_data_type is not None:
-                    # nan to nodatavalue
-                    field_template_array[np.isnan(field_template_array)] = output_nodatavalue
-                    field_template_array = field_template_array.astype(force_data_type)
-
-                farm_res = RSImg.from_array(array=field_template_array, nodatavalue=output_nodatavalue,
-                                            projection=self.img.projection, geoTransform=self.img.geoTransform)
+            farm_res = RSImg.from_array(array=field_template_array, nodatavalue=output_nodatavalue,
+                                        projection=self.img.projection, geoTransform=self.img.geoTransform)
 
         # delete tif
         # if IS_MEM:
@@ -929,8 +424,14 @@ class NewFarmWithOneImg:
 
 
 
-    def process_one_field_img(self, process_fun, field: Field, ref_src,
-                              output_nodatavalue, img_name: str, force_data_type=None):
+    def process_one_field_img(self,
+                              process_fun,
+                              field: Field,
+                              ref_src,
+                              output_nodatavalue,
+                              img_name: str,
+                              force_data_type=None
+                              ):
         """
         Process the image data of a single field using a specified processing function.
 
@@ -967,18 +468,6 @@ class NewFarmWithOneImg:
         field.deregister_img(img_name)
         return output, field_geoTransform, field_height, field_width
 
-    @staticmethod
-    def field_meta2geoTransform(meta):
-        """
-        Use rasterio.open(tif_path).meta to get the geoTransform information of the field.
-
-        :param meta: rasterio.open(tif_path).meta
-        :return: geoTransform
-        """
-        x_res, y_res = meta['transform'].a, meta['transform'].e
-        x_min, y_min = meta['transform'].c, meta['transform'].f
-        field_geoTransform = (x_min, x_res, 0, y_min, 0, y_res)
-        return field_geoTransform
 
     @staticmethod
     def find_field_pos_in_farm(field_geoTransform: tuple, farm_geoTransform: tuple,

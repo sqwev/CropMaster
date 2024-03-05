@@ -1,7 +1,7 @@
 cropbase.img
 =============================
 
-.. automodule:: cropbase.img.rsimg
+.. automodule:: cropbase.img.rsimg2
     :members:
     :undoc-members:
     :show-inheritance:

@@ -40,7 +40,7 @@ the date will be set to `datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")`.
 
 the useful property of `RsImg` object is:
 
-- `ds`: gdal dataset, campatible with gdal API
+- `ds`: rasterio dataset, campatible with rasterio API
 - `name`: (str) the name of the image
 - `date`: (str) the date of the image
 - `nodatavalue`: the nodatavalue of the image
@@ -59,8 +59,6 @@ Get image array
 array = rsimg.array
 ```
 
-
-
 Get valid mask
 
 ```python
@@ -74,24 +72,24 @@ Get tif border
 border = rsimg.border
 ```
 
-Crop image by pixel position
+Crop image by pixel position, it will return a new RsImg object with shape (100, 100)
 
 ```python
 rsimg.crop_by_pixel(0, 0, 100, 100)
 ```
-It will return a new RsImg object with shape (100, 100)
 
-Slide crop image
+
+Slide crop image, It will save the croped images to `save_dir` with name `{name}_x_y.tif`
+
 
 ```python
 rsimg.slide_crop(
-block_size = 256,
-overlap = 0.2,
-save_dir = 'path/to/save/dir'
+    block_size = 256,
+    overlap = 0.2,
+    save_dir = 'path/to/save/dir'
 )
 ```
 
-It will save the croped images to `save_dir` with name `{name}_x_y.tif`
 
 Cut image by shapefile
 
@@ -99,13 +97,13 @@ Cut image by shapefile
 cut_rsimg = rsimg.cut_by_shp('path/to/file.shp')
 ```
 
-Reproject image
+Reproject image by espg code
 
 ```python
 rsimg_4326 = rsimg.reproject(4326)
 ```
 
-Auto reproject image to utm
+Auto reproject image to utm zone
 
 ```python
 rsimg_utm = rsimg.auto_reproject_to_utm()
@@ -122,12 +120,12 @@ Save to tif file
 rsimg.to_tif('path/to/file.tif')
 ```
 
-Select some bands from image
+Select some bands from image, It will return a new RsImg object with only 3 bands.
 
 ```python
 rsimg.select_bands([1, 2, 3])
 ```
-It will return a new RsImg object with only 3 bands.
+
 
 Cluster image
 
@@ -137,6 +135,17 @@ rsimg.cluster(cluster_number=10, if_add_position_encoding=True, method='kmeans',
 ```
 It will return a new RsImg object with only 1 band, the value of the band is the cluster number.
 Support methods: `kmeans`, `meanshift`, `dbscan`, `hierarchical`, `gaussian`, `spectral`
+
+
+## Sentinel2RsImg
+
+Sentinel2RsImg is a subclass of RsImg, it is used to process sentinel2 image.
+Now I provide `renderRGB` method to render the image to RGB image.
+
+```python
+rgb = sentinel2_rsimg.renderRGB()
+```
+
 
 ## Farm
 
@@ -185,6 +194,7 @@ find points in which field
 farm.find_points_in_which_field(df: gpd.GeoDataFrame, split_multipolygon: bool)
 ```
 `df` must be a point GeoDataFrame
+
 
 
 

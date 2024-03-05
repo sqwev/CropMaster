@@ -6,12 +6,9 @@ import pandas as pd
 import numpy as np
 import geopandas as gpd
 
-from ..img.rsimg import RSImg, RestrictedDict
+from ..img import RsImg, RestrictedDict
 
 
-class FieldImg(RSImg):
-    def __init__(self, array, nodatavalue, projection, geoTransform):
-        RSImg.from_array(array, nodatavalue, projection, geoTransform)
 
 
 class Field:
@@ -37,9 +34,9 @@ class Field:
     crs = None
     name = None
     # dict
-    public_properties = pd.Series()
+    public_properties = pd.Series(dtype=object)
     _private_properties = {
-        'img_dict': RestrictedDict(RSImg)  # 存储这个field的图像
+        'img_dict': RestrictedDict(RsImg)  # 存储这个field的图像
     }
 
     def __init__(self, index: int = None, img_dict=None, crs=None, geometry=None, *args, **kwargs) -> None:
@@ -63,7 +60,7 @@ class Field:
         self.name = kwargs.get("name", None)
 
     def __str__(self):
-        raise f"Field: {self.index}"
+        return f"Field: {self.index}"
 
     def set_properties(self, properties: dict):
         """
@@ -74,7 +71,7 @@ class Field:
         for key, value in properties.items():
             self.public_properties[key] = value
 
-    def register_img(self, img: RSImg, name: str):
+    def register_img(self, img: RsImg, name: str):
         """
         register a RSImg with name to the field. The RSImg will be stored in the img_dict of the private
         property of the field object.
