@@ -1,22 +1,42 @@
-## Farm
+# Farm
 
-Farm is a collection of fields, and a farm can have many fields.
+Farm is a collection of fields, and a farm can have many fields. In default
+setting, we regard a farm as a combination of fields, and a field is a polygon.
 
-Suggested transfer params:
+We usually want to do statistics on the fields properties, such as area, so in 
+Farm class, I use geodataframe to store the fields' information.
 
-- :param file: shp or geojson
-- :param convert_dict: convert cols name in shp to standard cols name
-- :param name: str Farm name
-- :param gis_index_type: arcgis or qgis  This is used for init the index of field index,
-for Arcgis start from 0, and Qgis start from 1.
+## Create a Farm object
 
-The file can be a shp file or a geojson file, which is used to read by geopandas.
-Then return a `field_df` object, which is property of `Farm` object.
+```python
+your_farm = Farm(file='path/to/your/file.shp',
+                 name="your_farm_name")
+```
+In some cases, the name rule of shapefile fields or geojson fields is not standard, 
+so you can use `convert_dict` to convert the fields name to standard name.
 
-The `fields` property is a list of `Field` object, which is created from `field_df`.
+```python
+convert_dict = {
+    "col_name": {
+        "plot": "field"
+    },
+    "col_value": {
+        x: lambda x: x * 1000
+    },
+}
+your_farm = Farm(file='path/to/your/file.shp',
+                 name="your_farm_name",
+                 convert_dict=convert_dict)
+```
+Farm is a collection of fields, so I design fields in Farm object is a ordered list,
+however, the field index in Arcgis is start from 0, and in Qgis is start from 1, 
+so you can use `gis_index_type` to set the index type.
 
-
-
+```python
+your_farm = Farm(file='path/to/your/file.shp',
+                 name="your_farm_name",
+                 gis_index_type='arcgis')
+```
 
 ### some useful methods
 
