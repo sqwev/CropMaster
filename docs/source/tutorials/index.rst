@@ -8,4 +8,5 @@ Tutorials
    getting_started
    rsimg
    farm
+   field
 

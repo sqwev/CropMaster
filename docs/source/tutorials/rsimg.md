@@ -1,41 +1,41 @@
 # Introduction for Crop Master
 
 The Crop Master is a python package created for digital agriculture. For now, the core of
-this package is to process the relationship between farm, field and image.  
+this package is to process the relationship between farm, field and image.
 
 - Farm: farm can be considered as a collection of fields, and a farm can have many fields.
 - Field: field is a field planted with crops
 - Image: image is a remote sensing image, which can be satellite image or drone image.
 
-There are many useful packages which can be used for anlysis remote sensing image, but they 
+There are many useful packages which can be used for anlysis remote sensing image, but they
 usually don't consider the relationship between farm, field and image. This package is created
 to solve this problem.
 
 The `RsImg` class is the core of this package, it is used to process remote sensing image.
 
-## RsImg
+# RsImg
+
 Now I abandon the `GDAL` package, and transfer to `rasterio` package, which is more convenient to use.
 the `ds` property of `RsImg` object is a `rasterio` dataset, which is compatible with `rasterio` API.
 
 We provide 2 ways to create RsImg object. One is to read from a file, the other is to create from a numpy array.
 
-### Create RsImg object
+## Create RsImg object
 
 ```python
 # Read from a file
 rsimg = RsImg.from_tif('path/to/file.tif')
 # Read from a numpy array
-array = np.random.rand(3, 100, 100) # input array should be C * H * W
+array = np.random.rand(3, 100, 100)  # input array should be C * H * W
 nodatavalue = 0
-geotransform = (0, 1, 0, 0, 0, 1) # geo transform support gdal format and affine format
-projection = 4326 # projection support gdal format, code and rasterio.crs.CRS format
+geotransform = (0, 1, 0, 0, 0, 1)  # geo transform support gdal format and affine format
+projection = 4326  # projection support gdal format, code and rasterio.crs.CRS format
 rsimg = RsImg.from_array(array, nodatavalue, geotransform, projection)
 ```
 
 We recommend to create RsImg object with property `name` and `date`
 
-
-if `RsImg` object is created without `name` and `date`, the `name` will be set to `uuid.uuid1()`, 
+if `RsImg` object is created without `name` and `date`, the `name` will be set to `uuid.uuid1()`,
 the date will be set to `datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")`.
 
 the useful property of `RsImg` object is:
@@ -51,7 +51,7 @@ the useful property of `RsImg` object is:
 - `bands`: the bands of the image
 - `dim`: the dimension of the image
 
-### Some useful methods
+## Some useful methods
 
 Get image array
 
@@ -64,6 +64,7 @@ Get valid mask
 ```python
 mask = rsimg.valid_mask
 ```
+
 the `mask` is a numpy array with shape (HEIGHT, WIDTH), the value is 0 or 1, 0 means no data, 1 means has valid data.
 
 Get tif border
@@ -78,18 +79,15 @@ Crop image by pixel position, it will return a new RsImg object with shape (100,
 rsimg.crop_by_pixel(0, 0, 100, 100)
 ```
 
-
 Slide crop image, It will save the croped images to `save_dir` with name `{name}_x_y.tif`
-
 
 ```python
 rsimg.slide_crop(
-    block_size = 256,
-    overlap = 0.2,
-    save_dir = 'path/to/save/dir'
+    block_size=256,
+    overlap=0.2,
+    save_dir='path/to/save/dir'
 )
 ```
-
 
 Cut image by shapefile
 
@@ -109,11 +107,6 @@ Auto reproject image to utm zone
 rsimg_utm = rsimg.auto_reproject_to_utm()
 ```
 
-
-
-
-
-
 Save to tif file
 
 ```python
@@ -125,17 +118,6 @@ Select some bands from image, It will return a new RsImg object with only 3 band
 ```python
 rsimg.select_bands([1, 2, 3])
 ```
-
-
-Cluster image
-
-```python
-rsimg.cluster(cluster_number=10, if_add_position_encoding=True, method='kmeans', 
-              select_bands=None, filter_function=None)
-```
-It will return a new RsImg object with only 1 band, the value of the band is the cluster number.
-Support methods: `kmeans`, `meanshift`, `dbscan`, `hierarchical`, `gaussian`, `spectral`
-
 
 ## Sentinel2RsImg
 
@@ -151,7 +133,5 @@ rgb = sentinel2_rsimg.renderRGB()
 
 
 
-
-## Field
 
 
