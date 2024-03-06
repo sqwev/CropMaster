@@ -300,11 +300,12 @@ class FarmWithOneImg:
         return len(self.farm.fields)
 
     def __getitem__(self, item):
-        field_i = self.farm.fields[item]
-        field_geometry = field_i.geometry
+        field = self.farm[item]
+        field_geometry = field.geometry
+        print(f"field_geometry: {field_geometry}")
         field_img = self.img.cut_by_geometry(field_geometry)
-        field_i.register_img(field_img, field_img.name)
-        return field_i
+        field.register_img(field_img, field_img.name)
+        return field
 
     def process_by_field_img(self, process_fun, output_nodatavalue=0, force_data_type=None, field_list=None):
         # """

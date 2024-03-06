@@ -7,10 +7,7 @@ import numpy as np
 import geopandas as gpd
 import matplotlib.pyplot as plt
 
-
 from ..img import RsImg, RestrictedDict
-
-
 
 
 class Field:
@@ -31,15 +28,8 @@ class Field:
     :param pdseries: pd.Series, the public properties of the field
     :name str, the name of the field
     """
-    index = None
-    geometry = None
-    crs = None
-    name = None
+
     # dict
-    public_properties = pd.Series(dtype=object)
-    _private_properties = {
-        'img_dict': RestrictedDict(RsImg)  # 存储这个field的图像
-    }
 
     def __init__(self, index: int = None, img_dict=None, crs=None, geometry=None, *args, **kwargs) -> None:
 
@@ -60,6 +50,10 @@ class Field:
             self.index = pdseries.name
 
         self.name = kwargs.get("name", None)
+        self.public_properties = pd.Series(dtype=object)
+        self._private_properties = {
+            'img_dict': RestrictedDict(RsImg)  # 存储这个field的图像
+        }
 
     def __str__(self):
         return f"Field: {self.index}"
@@ -127,7 +121,6 @@ class Field:
         """
         assert point_df.shape[0] > 0, "point_df is empty"
         # value column mest be numeric
-
 
         # if crs is the same between point_df and img
         if point_df.crs != img.projection:
@@ -287,8 +280,9 @@ class Field:
 
     def plot(self):
         field_gdf = self.to_geodataframe()
-        field_gdf.plot( color='lightblue', edgecolor='gray')
+        field_gdf.plot(color='lightblue', edgecolor='gray')
         plt.show()
+
 
 class Fields:
     def __init__(self, fields: dict) -> None:
