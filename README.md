@@ -17,17 +17,7 @@ This project is only for learning, if you want to use it in your project, please
 
 ## Installation
 
-It relies on gdal and rasterio to read and write remote sensing image, 
-so you need to install gdal first.
-
-I recommend to install gdal with conda.
-
-```bash
-conda install -c conda-forge gdal==3.7.1
-conda install -c conda-forge rasterio
-```
-
-Then install CropMaster with pip.
+install CropMaster with pip.
 
 ```bash
 pip install -r requirements.txt
