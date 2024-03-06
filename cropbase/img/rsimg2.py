@@ -14,32 +14,25 @@ import shapely
 from rasterio.io import MemoryFile
 from rasterio.warp import reproject, Resampling
 
+from collections import UserDict
 
-class RestrictedDict:
+class RestrictedDict(UserDict):
     def __init__(self, allowed_type):
         self.allowed_type = allowed_type
-        self.internal_dict = {}
+        super().__init__()
 
     def __setitem__(self, key, value):
         if isinstance(value, self.allowed_type):
-            self.internal_dict[key] = value
+            self.data[key] = value
         else:
             raise ValueError(f"Value must be of type {self.allowed_type}")
 
-    def __getitem__(self, key):
-        return self.internal_dict[key]
-
-    def __delitem__(self, key):
-        del self.internal_dict[key]
-
-    def __repr__(self):
-        return repr(self.internal_dict)
 
 
 
 def calculate_utm_zone(longitude):
     """
-    根据给定的经度计算UTM区域。
+    Use the given longitude to calculate the UTM zone.
     longitude: 经度，范围从-180到180
     返回: UTM区域的编号，范围从1到60
     """
@@ -48,6 +41,17 @@ def calculate_utm_zone(longitude):
 
 
 def latlon_to_utm(longitude, latitude) -> int:
+    """
+    Automatically determine the UTM projection zone based on the given longitude and latitude.
+
+    Args:
+        longitude:
+        latitude:
+
+    Returns:
+        EPSG code of the UTM projection
+
+    """
     # 自动确定UTM投影带
     utm_zone = calculate_utm_zone(longitude)
     # 判断是南半球还是北半球
@@ -58,6 +62,16 @@ def latlon_to_utm(longitude, latitude) -> int:
 
 
 def auto_reco_crs(projection):
+    """
+    Automatically recognize the projection type and return the corresponding CRS object.
+
+    Args:
+        projection: the projection of the image, can be a string, an integer or a rasterio.crs.CRS object
+
+    Returns:
+        rasterio.crs.CRS object
+
+    """
     if isinstance(projection, int):
         return rasterio.crs.CRS.from_epsg(projection)
     elif isinstance(projection, str):
@@ -69,6 +83,16 @@ def auto_reco_crs(projection):
 
 
 def auto_reco_transform(geoTransform):
+    """
+    Automatically recognize the geoTransform type and return the corresponding affine.Affine object.
+
+    Args:
+        geoTransform: the geoTransform of the image, can be a tuple or an affine.Affine object
+
+    Returns:
+        affine.Affine object
+
+    """
     if isinstance(geoTransform, tuple) and len(geoTransform) == 6:
         return rasterio.transform.from_gcps(geoTransform)
     elif isinstance(geoTransform, affine.Affine):
@@ -78,6 +102,16 @@ def auto_reco_transform(geoTransform):
 
 
 def _is_value_in_dtype_range(value, dtype):
+    """
+    Check if the value is in the range of the given dtype.
+
+    Args:
+        value:
+        dtype:
+
+    Returns:
+        Ture or False
+    """
     if np.issubdtype(dtype, np.integer):
         # 整数类型
         info = np.iinfo(dtype)
@@ -92,7 +126,13 @@ def _is_value_in_dtype_range(value, dtype):
 
 def _get_CHW_array_shape(arr: np.ndarray):
     """
+    Get the shape of the array in the order of (channels, height, width)
 
+    Args:
+        arr: input array
+
+    Returns:
+        (height, width, channels)
     """
     if arr.ndim == 2:
         channels = 1
@@ -106,7 +146,13 @@ def _get_CHW_array_shape(arr: np.ndarray):
 
 def _get_HWC_array_shape(arr: np.ndarray):
     """
+    Get the shape of the array in the order of (height, width, channels)
 
+    Args:
+        arr: the input array
+
+    Returns:
+        (height, width, channels)
     """
     if arr.ndim == 2:
         height, width = arr.shape
@@ -119,6 +165,17 @@ def _get_HWC_array_shape(arr: np.ndarray):
 
 
 class RsImg:
+    """
+    RsImg is a package for rasterio, which is used to process remote sensing images in agriculture scene,
+    including UAV images and satellite images.
+
+    Args:
+        ds: rasterio.io.DatasetReader   The rasterio dataset object
+        name: str   The name of the image
+        date: str   The date of the image
+        *args:   The other arguments
+        **kwargs:   The other keyword arguments
+    """
 
     def __init__(self, ds, *args, **kwargs) -> None:
         self.ds = ds
@@ -136,6 +193,11 @@ class RsImg:
         self.dim = len(ds.shape)
 
     def print_attributes(self):
+        """
+        Print all the attributes of the image
+        Returns:
+
+        """
         # 使用 vars() 函数打印所有属性
         info = vars(self)
         for key, value in info.items():
@@ -181,6 +243,16 @@ class RsImg:
             return cls(ds=dataset, *args, **kwargs)
 
     def to_tif(self, tif_path, compress="lzw"):
+        """
+        Save the image to tif file
+
+        Args:
+            tif_path: The path to save the tif file
+            compress: if use compress, default is "lzw"
+
+        Returns:
+
+        """
         if compress is not None:
             self.ds.meta.update({
                 'compress': compress,
@@ -208,18 +280,25 @@ class RsImg:
         """
         Set the name of the image
 
-        :param name: str   The name of the image
+        Args:
+            name: The name of the image
+
+        Returns:
+
         """
         self.name = name
 
     def crop(self, left, top, right, bottom):
         """
         Crop the image by pixel serial number
+        Args:
+            left: The left pixel serial number
+            top: The top pixel serial number
+            right: The right pixel serial number
+            bottom: The bottom pixel serial number
 
-        :param left: int   The left pixel serial number
-        :param top: int   The top pixel serial number
-        :param right: int   The right pixel serial number
-        :param bottom: int   The bottom pixel serial number
+        Returns:
+            RsImg object
         """
         array = self.ds.read(window=((top, bottom), (left, right)))
         nodatavalue = self.nodatavalue
@@ -282,7 +361,7 @@ class RsImg:
                          "height": height,
                          "width": width,
                          "transform": out_transform})
-        return RsImg.from_array(out_image, nodatavalue=self.nodatavalue, projection=self.projection,
+        return self.from_array(out_image, nodatavalue=self.nodatavalue, projection=self.projection,
                                 geoTransform=out_transform)
 
     def cut_by_shp(self, shp_path):
@@ -331,17 +410,21 @@ class RsImg:
         print(dst_crs_espg)
         return self.reproject(dst_crs_espg)
 
-    def cluster(self):
-        from .cluster import ImgCluster, KmeansCluster
-        kmeans_cluster = KmeansCluster(
-            10,
-            add_postion_encoding=True
-        )
-        cluster_mask = kmeans_cluster(self.array)
+    from .cluster import ImgCluster
+    def cluster(self, cluster: ImgCluster):
+        cluster_mask = cluster(self.array)
         return RsImg.from_array(cluster_mask,
                                 nodatavalue=-1,
                                 projection=self.projection,
                                 geoTransform=self.geoTransform)
+
+    def resample(self, scale_factor):
+        """
+        Resample the image
+
+        :param scale_factor:    The scale factor
+        """
+        raise NotImplementedError("resample method is not implemented")
 
 
 class Sentinel2RsImg(RsImg):
@@ -357,7 +440,6 @@ class Sentinel2RsImg(RsImg):
     def from_array(cls, array: np.ndarray, nodatavalue, projection, geoTransform, *args, **kwargs):
         return super().from_array(array, nodatavalue, projection, geoTransform, *args, **kwargs)
 
-
     def renderRGB(self):
         def normalizedArray2RGB(array):
             normalizedArray = np.clip(array, 0, 3000) / 3000 * 255
@@ -367,3 +449,7 @@ class Sentinel2RsImg(RsImg):
         return RsImg.from_array(rgbarray, nodatavalue=self.nodatavalue, projection=self.projection,
                                 geoTransform=self.geoTransform)
 
+    def plot(self):
+        import matplotlib.pyplot as plt
+        plt.imshow(self.renderRGB().array.transpose(1, 2, 0))
+        plt.show()

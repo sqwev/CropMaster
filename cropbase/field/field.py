@@ -5,6 +5,8 @@
 import pandas as pd
 import numpy as np
 import geopandas as gpd
+import matplotlib.pyplot as plt
+
 
 from ..img import RsImg, RestrictedDict
 
@@ -89,12 +91,19 @@ class Field:
         """
         del self._private_properties["img_dict"][name]
 
-    def get_img(self, name: str):
+    def get_img(self, name=None):
         """
         get a RSImg with name to the field.
 
         :param name: str The name of the RSImg
         """
+        if len(self._private_properties["img_dict"]) == 0:
+            raise Exception("There is no img in the field")
+        if name is None:
+            # find the first img
+            name = list(self._private_properties["img_dict"].keys())[0]
+            # print(f"get the first img: {name}")
+
         return self._private_properties["img_dict"][name]
 
     def to_geodataframe(self):
@@ -276,6 +285,10 @@ class Field:
 
         return augmented_mask
 
+    def plot(self):
+        field_gdf = self.to_geodataframe()
+        field_gdf.plot( color='lightblue', edgecolor='gray')
+        plt.show()
 
 class Fields:
     def __init__(self, fields: dict) -> None:

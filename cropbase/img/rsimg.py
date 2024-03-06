@@ -35,6 +35,9 @@ class RestrictedDict:
     def __repr__(self):
         return repr(self.internal_dict)
 
+    def __len__(self):
+        return len(self.internal_dict)
+
 
 class RSImg:
     """
