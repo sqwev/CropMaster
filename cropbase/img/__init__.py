@@ -2,6 +2,7 @@
 # from .rsimgcollection import RSImgCollection
 from .annotation_tool import *
 
-from .rsimg2 import RsImg, RestrictedDict, Sentinel2RsImg
+from .rsimg2 import RsImg, RestrictedDict, Sentinel2RsImg, merge_rsimg
 from .cluster import ImgCluster, KmeansCluster
+
 

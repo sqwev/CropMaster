@@ -51,7 +51,6 @@ class Farm:
         self.crs = self.fields_df.crs
 
         # convert part
-
         # convert_dict = {
         #     "col_name": {},
         #     "col_value": {},
@@ -302,10 +301,36 @@ class FarmWithOneImg:
     def __getitem__(self, item):
         field = self.farm[item]
         field_geometry = field.geometry
-        print(f"field_geometry: {field_geometry}")
         field_img = self.img.cut_by_geometry(field_geometry)
         field.register_img(field_img, field_img.name)
         return field
+
+    def map2img(self, func, index):
+        """
+        map function to the fields in the farm, func will return a array
+        Args:
+            func:
+            indexes:
+
+        Returns:
+
+        """
+        if isinstance(index, int):
+            index = [index]
+        elif isinstance(index, list):
+            pass
+        else:
+            raise Exception(f"index: {index} not supported")
+
+
+
+
+
+
+
+
+
+
 
     def process_by_field_img(self, process_fun, output_nodatavalue=0, force_data_type=None, field_list=None):
         # """
@@ -420,7 +445,7 @@ class FarmWithOneImg:
                 field_template_array[np.isnan(field_template_array)] = output_nodatavalue
                 field_template_array = field_template_array.astype(force_data_type)
 
-            farm_res = RSImg.from_array(array=field_template_array, nodatavalue=output_nodatavalue,
+            farm_res = RsImg.from_array(array=field_template_array, nodatavalue=output_nodatavalue,
                                         projection=self.img.projection, geoTransform=self.img.geoTransform)
 
         # delete tif

@@ -13,7 +13,7 @@ import affine
 import shapely
 from rasterio.io import MemoryFile
 from rasterio.warp import reproject, Resampling
-
+from rasterio.merge import merge
 from collections import UserDict
 
 class RestrictedDict(UserDict):
@@ -162,6 +162,22 @@ def _get_HWC_array_shape(arr: np.ndarray):
     else:
         raise ValueError(f"Unsupported array shape: {arr.shape}")
     return height, width, channels
+
+def merge_rsimg(rsimg_list):
+    """
+    Merge the RsImg object list into one RsImg object
+
+    Args:
+        rsimg_list: list   The list of the RsImg object
+
+    Returns:
+        RsImg object
+    """
+    datasets_to_merge = [rsimg.ds for rsimg in rsimg_list]
+    merged_dataset_array, merged_transform = merge(datasets_to_merge)
+    return RsImg.from_array(merged_dataset_array, nodatavalue=rsimg_list[0].nodatavalue,
+                            projection=rsimg_list[0].projection, geoTransform=merged_transform)
+
 
 
 class RsImg:

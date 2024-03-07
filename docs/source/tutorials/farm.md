@@ -38,14 +38,14 @@ your_farm = Farm(file='path/to/your/file.shp',
                  gis_index_type='arcgis')
 ```
 
-### some useful methods
+## some useful methods
 
 get public property of fields
 ```python
 farm.get_geoDataFrame()
 ```
 
-export to json or shapefile
+export Farm to json or shapefile
 
 ```python
 farm.to_file('path/to/file.json')
@@ -58,9 +58,32 @@ split multi-polygon to single polygon
 farm.split_multipolygon_fields()
 ```
 
-find points in which field
+find points in which field, `df` must be a point GeoDataFrame
 
 ```python
 farm.find_points_in_which_field(df: gpd.GeoDataFrame, split_multipolygon: bool)
 ```
-`df` must be a point GeoDataFrame
+
+Plot the farm
+
+```python
+farm.plot()
+```
+
+## Farm with one Img
+
+We often use a shapefile or geojson and a tif file to do some analysis or
+statistics, so I design a class to combine the shapefile and tif file.
+
+```python
+farm_with_img = FarmWithImg(shp_file='path/to/your/file.shp',
+                            img_file='path/to/your/file.tif',)
+```
+
+Select a field; the field_0 object is a Field object, and you can use `get_img()` 
+method to get the img cutted by the field's geometry.
+    
+```python
+field_0 = farm_with_img[0]
+```
+

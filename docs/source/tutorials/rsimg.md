@@ -105,6 +105,13 @@ Select some bands from image, It will return a new RsImg object with only 3 band
 rsimg.select_bands([1, 2, 3])
 ```
 
+Merge RsImg objects, return a new RsImg object, the RsImg objects should
+have the same channel number and projection.
+
+```python
+newimg = cb.rsimg.merge_rsimg([rsimg1, rsimg2])
+```
+
 ## Sentinel2RsImg
 
 Sentinel2RsImg is a subclass of RsImg, it is used to process sentinel2 image.
