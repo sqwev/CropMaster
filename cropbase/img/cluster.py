@@ -67,7 +67,7 @@ def cal_ndvi(red, nir):
     return (nir - red) / (nir + red)
 
 
-def sort_labels_by_ndvi(labels, centers, ndvi_list):
+def sort_labels_by_ndvi(labels, ndvi_list):
     ndvi_list = np.array(ndvi_list)
     sort_index = np.argsort(ndvi_list)
     labels_dict = {sort_index[i]: i for i in range(len(sort_index))}
@@ -76,15 +76,15 @@ def sort_labels_by_ndvi(labels, centers, ndvi_list):
 
 
 class ImgCluster:
-    def __init__(self, cluster_number: int, add_postion_encoding: bool = False):
+    def __init__(self, cluster_number: int, add_position_encoding: bool = False):
         self.cluster_number = cluster_number
-        self.add_postion_encoding = add_postion_encoding
+        self.add_position_encoding = add_position_encoding
 
     def __call__(self, array):
         dim = len(array.shape)
         assert dim == 2 or dim == 3, f"array dim should be 2 or 3, but got {dim}"
         height, width, channels = _get_CHW_array_shape(array)
-        if self.add_postion_encoding:
+        if self.add_position_encoding:
             array = self._add_position_encoding(array)
             columns_name = [f"B{i + 1}" for i in range(channels)] + ["x", "y"]
             channels += 2
@@ -97,8 +97,14 @@ class ImgCluster:
         if len(filtered_df) == 0:
             raise Exception("can't be use cluster, because all the value is nodatavalue")
 
-        clustered_df = self.cluster(filtered_df)
-        cluster_label = np.full(width * height, -1)  # 创建一个填充了 -1 的数组
+        # uniform filtered_df each column to 0-1
+        filtered_df_copy = filtered_df.copy()
+        for col in filtered_df_copy.columns:
+            filtered_df_copy[col] = (filtered_df_copy[col] - filtered_df_copy[col].min()) / (
+                        filtered_df_copy[col].max() - filtered_df_copy[col].min())
+
+        clustered_df = self.cluster(filtered_df_copy)
+        cluster_label = np.full(width * height, np.nan)  # 创建一个填充了 -1 的数组
         indices = clustered_df.index.values
         mask = np.isin(np.arange(width * height), indices)  # 创建一个布尔掩码来检查索引是否存在于 clustered_df 中
         cluster_label[mask] = clustered_df.loc[indices, "label"].values  # 使用布尔掩码来更新 cluster_label
@@ -136,22 +142,52 @@ class ImgCluster:
 
 
 class KmeansCluster(ImgCluster):
-    def __init__(self, cluster_number: int, add_postion_encoding: bool = False):
-        super().__init__(cluster_number, add_postion_encoding)
+    def __init__(self, cluster_number: int, add_position_encoding: bool = False):
+        super().__init__(cluster_number, add_position_encoding)
 
     def cluster(self, df: pd.DataFrame) -> pd.DataFrame:
+        df_copy = df.copy()
+        self.cluster_number = min(self.cluster_number, len(df))
         clustering = KMeans(n_clusters=self.cluster_number).fit(df)
-        labels = clustering.labels_
-        centers = clustering.cluster_centers_
-        ndvi_list = []
-        for center in centers:
-            ndvi = cal_ndvi(center[2], center[3])
-            ndvi_list.append(ndvi)
+        df_copy.loc[:, "label"] = clustering.labels_
+        return df_copy
 
-        # 根据聚类中心的ndvi值对等级进行排序
-        ndvi_list = np.array(ndvi_list)
-        sort_index = np.argsort(ndvi_list)
-        labels_dict = {sort_index[i]: i for i in range(len(sort_index))}
-        labels = [labels_dict[i] + 1 for i in labels]
-        df["label"] = labels
+
+class DBSCANCluster(ImgCluster):
+    def __init__(self,
+                 cluster_number: int,
+                 add_position_encoding: bool = False,
+                 eps: float = 0.5):
+        super().__init__(cluster_number, add_position_encoding)
+        self.eps = eps
+        self.min_samples = cluster_number
+
+    def cluster(self, df: pd.DataFrame) -> pd.DataFrame:
+        clustering = DBSCAN(eps=0.9, min_samples=self.min_samples).fit(df)
+        df["label"] = clustering.labels_
         return df
+
+
+def recode_labels(label_array, ndvi_array):
+    """
+    Recode labels based on the ndvi value of each pixel
+    """
+    # statistics the ndvi value of each label
+    unique_labels = np.unique(label_array)
+    # if nan in unique_labels, del
+    unique_labels = unique_labels[~np.isnan(unique_labels)]
+
+    label_ndvi_stats = {}
+    for label in unique_labels:
+        # 计算每个标签对应的 NDVI 值统计信息
+        label_ndvi_stats[label] = np.mean(ndvi_array[label_array == label])
+
+    # recode the labels based on the ndvi value from low to high
+    sorted_labels = sorted(label_ndvi_stats, key=lambda x: label_ndvi_stats[x], reverse=True)
+
+    # np nan like
+
+    recode_label_array = np.full_like(label_array, np.nan)
+    for idx, label in enumerate(sorted_labels):
+        recode_label_array[label_array == label] = idx
+    return recode_label_array

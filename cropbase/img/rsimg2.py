@@ -11,6 +11,8 @@ import rasterio.mask
 import fiona
 import affine
 import shapely
+import matplotlib.pyplot as plt
+from deprecated import deprecated
 from rasterio.io import MemoryFile
 from rasterio.warp import reproject, Resampling
 from rasterio.merge import merge
@@ -163,7 +165,9 @@ def _get_HWC_array_shape(arr: np.ndarray):
         raise ValueError(f"Unsupported array shape: {arr.shape}")
     return height, width, channels
 
-def merge_rsimg(rsimg_list):
+def merge_rsimg(rsimg_list,
+                bounds=None,
+                ):
     """
     Merge the RsImg object list into one RsImg object
 
@@ -174,9 +178,14 @@ def merge_rsimg(rsimg_list):
         RsImg object
     """
     datasets_to_merge = [rsimg.ds for rsimg in rsimg_list]
-    merged_dataset_array, merged_transform = merge(datasets_to_merge)
+    merged_dataset_array, merged_transform = merge(datasets_to_merge,
+                                                   bounds=bounds)
     return RsImg.from_array(merged_dataset_array, nodatavalue=rsimg_list[0].nodatavalue,
                             projection=rsimg_list[0].projection, geoTransform=merged_transform)
+
+
+
+
 
 
 
@@ -200,6 +209,7 @@ class RsImg:
         self.name = kwargs.get("name", uuid.uuid1())
         self.date = kwargs.get("date", datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
         self.projection = ds.crs
+        self.crs = ds.crs
         self.geoTransform = ds.transform
         self.nodatavalue = ds.nodata
         self.height = ds.height
@@ -207,6 +217,10 @@ class RsImg:
         self.bands = ds.count
         self.shape = ds.shape
         self.dim = len(ds.shape)
+
+        self.x_min, self.y_min, self.x_max, self.y_max = ds.bounds
+        self.x_res = self.geoTransform.a
+        self.y_res = -self.geoTransform.e
 
     def print_attributes(self):
         """
@@ -231,7 +245,11 @@ class RsImg:
             array.shape)
         # nodatavalue can't over the range of dtype
         array_dtype = array.dtype
-        assert _is_value_in_dtype_range(nodatavalue, array_dtype), "nodatavalue can't over the range of dtype"
+        array_dim = array.ndim
+        if np.isnan(nodatavalue):
+            pass
+        else:
+            assert _is_value_in_dtype_range(nodatavalue, array_dtype), "nodatavalue can't over the range of dtype"
 
         projection = auto_reco_crs(projection)
         _geoTransform = auto_reco_transform(geoTransform)
@@ -249,14 +267,14 @@ class RsImg:
             'crs': projection
         }
         # print(dataset_meta)
-        if channels == 1:
+        if array_dim == 2:
             array = array[np.newaxis, ...]
 
-        with MemoryFile() as memfile:
-            dataset = memfile.open(**dataset_meta)
-            dataset.write(array)
 
-            return cls(ds=dataset, *args, **kwargs)
+        cls.memfile = MemoryFile()
+        dataset = cls.memfile.open(**dataset_meta)
+        dataset.write(array)
+        return cls(ds=dataset, *args, **kwargs)
 
     def to_tif(self, tif_path, compress="lzw"):
         """
@@ -282,6 +300,10 @@ class RsImg:
 
     def __del__(self):
         self.ds.close()
+        try:
+            self.memfile.close()
+        except:
+            pass
         del self.ds
 
     @property
@@ -289,7 +311,7 @@ class RsImg:
         return self.ds.read_masks()
 
     @property
-    def border(self):
+    def bounds(self):
         return self.ds.bounds
 
     def set_name(self, name: str):
@@ -324,7 +346,18 @@ class RsImg:
         new_transform = rasterio.transform.from_origin(xoff, yoff, self.geoTransform.a, -self.geoTransform.e)
         return RsImg.from_array(array, nodatavalue=nodatavalue, projection=projection, geoTransform=new_transform)
 
-    def select_bands(self, band_list):
+    def __getitem__(self, item):
+        """
+        Select the bands of the image
+
+        :param band_list: list   The list of the bands
+        """
+        # raise NotImplementedError("__getitem__ method is not implemented")
+        array = self.array[item]
+        return RsImg.from_array(array, nodatavalue=self.nodatavalue, projection=self.projection,
+                                geoTransform=self.geoTransform)
+
+    def get_bands(self, band_list):
         """
         Select the bands of the image
 
@@ -394,7 +427,13 @@ class RsImg:
         """
         Plot the image
         """
-        raise NotImplementedError("plot method is not implemented")
+
+        if self.bands == 1:
+            plt.imshow(self.array.squeeze(0))
+            plt.show()
+        else:
+            raise NotImplementedError("plot method is not implemented")
+
 
     def reproject(self, dst_crs_espg: int):
         """
@@ -465,7 +504,19 @@ class Sentinel2RsImg(RsImg):
         return RsImg.from_array(rgbarray, nodatavalue=self.nodatavalue, projection=self.projection,
                                 geoTransform=self.geoTransform)
 
-    def plot(self):
-        import matplotlib.pyplot as plt
+    def plot_rgb(self):
         plt.imshow(self.renderRGB().array.transpose(1, 2, 0))
         plt.show()
+
+    def plot_nir(self):
+        plt.imshow(self.array[7])
+        plt.show()
+
+    def ndvi(self):
+        nir = self.array[7]
+        red = self.array[4]
+        return (nir - red) / (nir + red)
+
+
+def merge_small_raster_into_big_raster(small_raster_list, big_raster):
+    pass

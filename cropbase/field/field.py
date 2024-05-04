@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import geopandas as gpd
 import matplotlib.pyplot as plt
+from deprecated import deprecated
 
 from ..img import RsImg, RestrictedDict
 
@@ -31,14 +32,19 @@ class Field:
 
     # dict
 
-    def __init__(self, index: int = None, img_dict=None, crs=None, geometry=None, *args, **kwargs) -> None:
+    def __init__(self, index: int = None, crs=None, geometry=None, *args, **kwargs) -> None:
 
-        if index is not None:
-            self.index = index
-        if geometry is not None:
-            self.geometry = geometry
-        if crs is not None:
-            self.crs = crs
+        self.index = index
+        self.crs = crs
+        self.geometry = geometry
+
+        self.public_properties = pd.Series(dtype=object)
+        self.name = kwargs.get("name", None)
+        self._private_properties = {
+            'img_dict': RestrictedDict(RsImg)  # 存储这个field的图像
+        }
+
+        img_dict = kwargs.get("img_dict", None)
         if img_dict is not None:
             for k, v in img_dict.items():
                 self._private_properties["img_dict"][k] = v
@@ -48,12 +54,6 @@ class Field:
             self.geometry = pdseries["geometry"]
             self.public_properties = pdseries
             self.index = pdseries.name
-
-        self.name = kwargs.get("name", None)
-        self.public_properties = pd.Series(dtype=object)
-        self._private_properties = {
-            'img_dict': RestrictedDict(RsImg)  # 存储这个field的图像
-        }
 
     def __str__(self):
         return f"Field: {self.index}"
@@ -126,7 +126,7 @@ class Field:
         if point_df.crs != img.projection:
             point_df = point_df.to_crs(img.projection)
 
-        img_valid_mask = img.valid_mask
+        img_valid_mask = img.valid_mask[0]
 
         # obtain col_idx, row_idx of img for each point, del if point not in img
         loc_list = []
@@ -136,7 +136,7 @@ class Field:
             latitude = point_df.iloc[i]['geometry'].y
             # 计算在田块中的位置
             col_idx = int(np.ceil((longitude - img.x_min) / img.x_res)) - 1
-            row_idx = int(np.ceil((latitude - img.y_min) / img.y_res)) - 1
+            row_idx = int(np.ceil(-(latitude - img.y_max) / img.y_res)) - 1
             # 如果valid_mask中的值为0，说明这个点不在田块内，不考虑这个点
             if img_valid_mask[row_idx, col_idx] == 0:
                 print(f"point:{longitude}, {latitude} not in field")
@@ -156,6 +156,7 @@ class Field:
         del point_df['if_in_field']
         return point_df
 
+    @deprecated(version='0.1.0', reason="The method has been deprecated")
     def gen_aug_mask(self, cluster_mask: np.ndarray, location_df: pd.DataFrame, type="mean"):
         """
         Input a cluster_mask and a location_df, then generate a new mask, mapper the location_df to the cluster_mask.
@@ -270,7 +271,7 @@ class Field:
             raise ValueError("Type must be 'mean' or 'max_point_number'")
 
         # 创建一个新的 numpy 数组，用 nan 初始化
-        augmented_mask = np.full(cluster_mask.shape, np.nan, dtype=np.float32)
+        augmented_mask = np.full(cluster_mask.shape, np.nan)
 
         # 更新 augmented_mask
         for cluster_label, value in cluster_values.items():
