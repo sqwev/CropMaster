@@ -1,1 +1,1 @@
-from .farm import FarmWithOneImg, Farm, NewFarmWithOneImg
+from .farm import FarmWithOneImg, Farm

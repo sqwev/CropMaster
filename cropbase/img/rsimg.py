@@ -35,6 +35,9 @@ class RestrictedDict:
     def __repr__(self):
         return repr(self.internal_dict)
 
+    def __len__(self):
+        return len(self.internal_dict)
+
 
 class RSImg:
     """
@@ -631,16 +634,16 @@ class NewRSImg:
             raise Exception(f"date: {self.date} must be str type")
 
         self.ds = ds
-        self.projection = ds.crs.to_wkt()
-        self.geoTransform = ds.GetGeoTransform()
-        self.WIDTH = ds.width
-        self.HEIGHT = ds.height
+        self.projection = ds.crs
+        self.geoTransform = ds.transform
+        self.width = ds.width
+        self.height = ds.height
         self.BANDS = ds.count
         self.dim = 2 if self.BANDS == 1 else 3
         self.x_min, self.x_res, self.rotation, self.y_min, self.rotation, self.y_res = self.geoTransform
-        self.x_max = self.x_min + self.x_res * self.WIDTH
-        self.y_max = self.y_min + self.y_res * self.HEIGHT
-        self.nodatavalue = ds.GetRasterBand(1).GetNoDataValue()
+        self.x_max = self.x_min + self.x_res * self.width
+        self.y_max = self.y_min + self.y_res * self.height
+
 
     @classmethod
     def from_array(cls, array, nodatavalue, projection, geoTransform, *args, **kwargs):

@@ -2,11 +2,13 @@
 # @author: Shenzhou Liu
 # @email: shenzhouliu@whu.edu.cn
 # @copyright: © 2024 Shenzhou Liu. All rights reserved.
-
-from skimage import measure
+import fiona
+import fiona.crs
 import numpy as np
 import pandas as pd
 import pycocotools.mask as mask_util
+from shapely.geometry import mapping, Point
+from skimage import measure
 
 def singleMask2rle(mask):
     rle = mask_util.encode(np.array(mask[:, :, None], order='F', dtype="uint8"))[0]
@@ -45,11 +47,8 @@ def binary_mask_to_polygon(binary_mask, tolerance=0):
 
 
 
-import fiona
-import fiona.crs
-from shapely.geometry import mapping, Point
-# 将含有经纬度、灾损率的csv文件转换为shp文件
 
+# 将含有经纬度、灾损率的csv文件转换为shp文件
 def clean_df(df:pd.DataFrame, shp_save_path:str):
 
     df = df.dropna()

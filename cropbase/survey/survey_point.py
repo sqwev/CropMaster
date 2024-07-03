@@ -3,14 +3,11 @@ import geopandas as gpd
 import pandas as pd
 
 
-
 class SurveyPoints:
     def __init__(self):
         self.path = 'path'
         # self.points_df = gpd.read_file(self.path)
         # self.check_feature_type(self.points_df, ["Point"])
-
-
 
     def check_feature_type(self, df, supported_feature_type):
         feature_type = df.geom_type.unique()
@@ -53,7 +50,7 @@ class SurveyPoints:
                 elif check_format_lrshp(i):
                     head = i.split('.')[0]
                     farm, date, lr_str, lr100 = head.split('_')
-                    lr = int(lr100)/100
+                    lr = int(lr100) / 100
                     _lr_df = gpd.read_file(os.path.join(dir, i))
                     _lr_df['lossrate'] = lr
                     _lr_df = _lr_df.to_crs(epsg=default_espg)
@@ -77,11 +74,7 @@ class SurveyPoints:
             pass
         return total_df
 
-
     def get_losstype_df(self, dir):
         no_disaster_name = 'nodisaseter.shp'
         waterlogging_name = 'waterlogging.shp'
         lodging_name = 'lodging.shp'
-
-
-
