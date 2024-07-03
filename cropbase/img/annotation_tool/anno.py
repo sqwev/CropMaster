@@ -188,18 +188,29 @@ class FarmAnnotation:
                 if annotype in ['semantic', 'instance']:
                     dict_value_unique = list(set(_dict.values()))
                     for value in dict_value_unique:
-                        self.coco.dataset['categories'].append({
-                            "id": len(self.coco.dataset['categories']) + 1,
-                            "name": value,
-                            "supercategory": "crop"
-                        })
-                        self.CATEGORY_DICT[value] = len(self.coco.dataset['categories'])
+                        if value not in self.CATEGORY_DICT:
+                            value_id = len(self.coco.dataset['categories']) + 1
+                            self.CATEGORY_DICT[value] = value_id
+                            self.coco.dataset['categories'].append({
+                                "id": value_id,
+                                "name": value,
+                                "supercategory": "crop"
+                            })
+                        else:
+                            value_id = self.CATEGORY_DICT[value]
+
                 elif annotype == 'regression':
-                    self.coco.dataset['reg_categories'].append({
-                        "id": len(self.coco.dataset['reg_categories']) + 1,
-                        "name": anno_content,
-                    })
-                    self.REG_DICT[anno_content] = len(self.coco.dataset['reg_categories'])
+                    if anno_content not in self.REG_DICT:
+                        reg_id = len(self.coco.dataset['reg_categories']) + 1
+                        self.REG_DICT[anno_content] = reg_id
+                        self.coco.dataset['reg_categories'].append({
+                            "id": reg_id,
+                            "name": anno_content,
+                        })
+                    else:
+                        reg_id = self.REG_DICT[anno_content]
+
+
                 else:
                     pass
 

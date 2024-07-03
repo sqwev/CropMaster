@@ -37,7 +37,7 @@ class Field:
     crs = None
     name = None
     # dict
-    public_properties = pd.Series()
+    public_properties = pd.Series(dtype=object)
     _private_properties = {
         'img_dict': RestrictedDict(RSImg)  # 存储这个field的图像
     }
@@ -63,7 +63,7 @@ class Field:
         self.name = kwargs.get("name", None)
 
     def __str__(self):
-        raise f"Field: {self.index}"
+        return f"Field: {self.index}"
 
     def set_properties(self, properties: dict):
         """

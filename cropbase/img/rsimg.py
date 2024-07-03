@@ -415,7 +415,10 @@ class RSImg:
 
     # 计算
 
-    def cluster(self, cluster_number, if_add_position_encoding=True, method='kmeans', select_bands=None,
+    def cluster(self, cluster_number,
+                if_add_position_encoding=True,
+                method='kmeans',
+                select_bands=None,
                 filter_function=None):
         """
         Cluster the image by different method
@@ -568,8 +571,14 @@ class RSImg:
         if len(filter_df) != 0 and len(rawdf) == 0:
             raise Exception("can't be use cluster, because all data in field is cloud")
 
+        # uniform filtered_df each column to 0-1
+        filtered_df_copy = filter_df.copy()
+        for col in filtered_df_copy.columns:
+            filtered_df_copy[col] = (filtered_df_copy[col] - filtered_df_copy[col].min()) / (
+                    filtered_df_copy[col].max() - filtered_df_copy[col].min())
+
         # -----------------聚类-----------------
-        clustered_df = builtin_cluster(filter_df, cluster_number)
+        clustered_df = builtin_cluster(filtered_df_copy, cluster_number)
         cluster_label = np.full(self.WIDTH * self.HEIGHT, -1)  # 创建一个填充了 -1 的数组
 
         indices = clustered_df.index.values
